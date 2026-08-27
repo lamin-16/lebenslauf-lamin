@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { FileText, Globe, Printer, Menu, X, ChevronDown, BookOpen, Home, Layout, Gauge, Lightbulb } from 'lucide-react';
+import { FileText, Globe, Printer, Menu, X, ChevronDown, BookOpen, Home, Layout, Gauge, Lightbulb, Shield } from 'lucide-react';
 import { languages } from '../i18n';
 
-export default function Navbar({ language, setLanguage, onPrint, t, darkMode, onShowGuide, onNavigate, onShowBlog }) {
+export default function Navbar({ language, setLanguage, onPrint, t, darkMode, onShowGuide, onNavigate, onShowBlog, onShowLegal }) {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLegalOpen, setIsLegalOpen] = useState(false);
   const currentLang = languages.find(l => l.code === language);
 
   const handleGuideClick = (e) => {
@@ -97,6 +98,31 @@ export default function Navbar({ language, setLanguage, onPrint, t, darkMode, on
               )}
             </div>
 
+            <div className="relative">
+              <button
+                onClick={() => setIsLegalOpen(!isLegalOpen)}
+                className="p-2 rounded-lg border border-gray-300 hover:border-royal-gold transition-colors text-gray-600"
+                title="Rechtliches"
+              >
+                <Shield className="h-4 w-4" />
+              </button>
+              {isLegalOpen && (
+                <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
+                  <button
+                    onClick={() => { onShowLegal('privacy'); setIsLegalOpen(false); }}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors text-gray-700"
+                  >
+                    {language === 'de' ? 'Datenschutz' : language === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'}
+                  </button>
+                  <button
+                    onClick={() => { onShowLegal('imprint'); setIsLegalOpen(false); }}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors text-gray-700"
+                  >
+                    {language === 'de' ? 'Impressum' : language === 'ar' ? 'إخلاء المسؤولية' : 'Imprint'}
+                  </button>
+                </div>
+              )}
+            </div>
             <button
               onClick={onPrint}
               className="inline-flex items-center gap-2 btn-gold py-2 px-4 rounded-lg text-sm shadow-royal"

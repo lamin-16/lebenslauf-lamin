@@ -4,7 +4,7 @@ export const legalContent = {
       title: 'Datenschutzerklärung',
       updated: 'Stand: August 2026',
       sections: [
-        { heading: '1. Verantwortlicher', body: 'Verantwortlich für die Datenverarbeitung auf dieser Website ist Mohamed Chadli.' },
+        { heading: '1. Verantwortlicher', body: 'Verantwortlich für die Datenverarbeitung auf dieser Website ist Lebenslauf LAMIN.' },
         { heading: '2. Erhebung und Speicherung personenbezogener Daten', body: 'Diese Anwendung speichert alle eingegebenen Lebenslaufdaten ausschließlich lokal im Browser des Nutzers. Es werden keine personenbezogenen Daten an einen Server übertragen.' },
         { heading: '3. Cookies und lokale Speicherung', body: 'Die Anwendung verwendet localStorage, um Ihre Eingaben zu speichern. Diese Daten bleiben auf Ihrem Gerät und können jederzeit durch Löschen des Browser-Caches entfernt werden.' },
         { heading: '4. Werbung', body: 'Zur Finanzierung des Angebots werden Anzeigen von Drittanbietern (z. B. Adsterra) eingeblendet. Diese Anbieter können Cookies oder ähnliche Technologien verwenden.' },
@@ -16,7 +16,7 @@ export const legalContent = {
       title: 'Privacy Policy',
       updated: 'Last updated: August 2026',
       sections: [
-        { heading: '1. Data Controller', body: 'The controller responsible for data processing on this website is Mohamed Chadli.' },
+        { heading: '1. Data Controller', body: 'The controller responsible for data processing on this website is Lebenslauf LAMIN.' },
         { heading: '2. Collection and Storage of Personal Data', body: 'This application stores all entered CV data exclusively locally in the browser of the user. No personal data is transmitted to a server.' },
         { heading: '3. Cookies and Local Storage', body: 'The application uses localStorage to save your entries. This data remains on your device and can be removed at any time by clearing the browser cache.' },
         { heading: '4. Advertising', body: 'To finance the offer, third-party advertisements (e.g. Adsterra) are displayed. These providers may use cookies or similar technologies.' },
@@ -42,7 +42,7 @@ export const legalContent = {
       title: 'Haftungsausschluss / Impressum',
       updated: 'Stand: August 2026',
       sections: [
-        { heading: '1. Angaben gemäß § 5 TMG', body: 'Mohamed Chadli\nLebenslauf LAMIN\nAlgerien' },
+        { heading: '1. Angaben gemäß § 5 TMG', body: 'Lebenslauf LAMIN\nLebenslauf LAMIN\nAlgeria' },
         { heading: '2. Haftung für Inhalte', body: 'Die Inhalte dieser Anwendung wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte übernehmen wir jedoch keine Gewähr.' },
         { heading: '3. Haftung für Links', body: 'Diese Anwendung kann Links zu externen Websites Dritter enthalten. Auf den Inhalt dieser Websites haben wir keinen Einfluss und übernehmen dafür keine Haftung.' },
         { heading: '4. Urheberrecht', body: 'Die durch den Seitenbetreiber erstellten Inhalte unterliegen dem Urheberrecht. Die Vervielfältigung oder Verwendung in anderen elektronischen oder gedruckten Publikationen ist ohne ausdrückliche Zustimmung nicht gestattet.' },
@@ -52,7 +52,7 @@ export const legalContent = {
       title: 'Disclaimer / Imprint',
       updated: 'Last updated: August 2026',
       sections: [
-        { heading: '1. Information according to § 5 TMG', body: 'Mohamed Chadli\nLebenslauf LAMIN\nAlgeria' },
+        { heading: '1. Information according to § 5 TMG', body: 'Lebenslauf LAMIN\nLebenslauf LAMIN\nAlgeria' },
         { heading: '2. Liability for Content', body: 'The content of this application was created with the greatest care. However, we assume no liability for the correctness, completeness and timeliness of the content.' },
         { heading: '3. Liability for Links', body: 'This application may contain links to external third-party websites. We have no influence on the content of these websites and accept no liability for them.' },
         { heading: '4. Copyright', body: 'The content created by the site operator is subject to copyright. Reproduction or use in other electronic or printed publications is not permitted without express consent.' },

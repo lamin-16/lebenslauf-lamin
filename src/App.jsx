@@ -248,7 +248,7 @@ export default function App() {
 
   return (
     <div dir={dir} className={`min-h-screen ${darkMode ? 'bg-royal-navy text-white' : 'bg-gray-100 text-gray-900'} font-sans transition-colors`}>
-      <Navbar language={language} setLanguage={setLanguage} onPrint={() => window.print()} t={t} darkMode={darkMode} onShowGuide={() => { setShowGuide(true); setShowBlog(false); setCurrentPost(null); }} onNavigate={() => { setShowGuide(false); setShowBlog(false); setCurrentPost(null); }} onShowBlog={() => { setShowBlog(true); setShowGuide(false); setCurrentPost(null); }} />
+      <Navbar language={language} setLanguage={setLanguage} onPrint={() => window.print()} t={t} darkMode={darkMode} onShowGuide={() => { setShowGuide(true); setShowBlog(false); setCurrentPost(null); setLegalType(null); }} onNavigate={() => { setShowGuide(false); setShowBlog(false); setCurrentPost(null); setLegalType(null); }} onShowBlog={() => { setShowBlog(true); setShowGuide(false); setCurrentPost(null); setLegalType(null); }} onShowLegal={(type) => { setLegalType(type); setShowGuide(false); setShowBlog(false); setCurrentPost(null); }} />
 
       {legalType ? (
         <LegalPage type={legalType} language={language} onBack={() => setLegalType(null)} />
