@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FileText, Globe, Printer, Menu, X, ChevronDown, BookOpen, Home, Layout, Gauge, Lightbulb } from 'lucide-react';
 import { languages } from '../i18n';
 
-export default function Navbar({ language, setLanguage, onPrint, t, darkMode, onShowGuide, onNavigate }) {
+export default function Navbar({ language, setLanguage, onPrint, t, darkMode, onShowGuide, onNavigate, onShowBlog }) {
   const [isLangOpen, setIsLangOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -15,10 +15,13 @@ export default function Navbar({ language, setLanguage, onPrint, t, darkMode, on
   };
 
   const handleNavClick = (e, item) => {
-    if (item.special) {
+    if (item.special && item.blog) {
+      e.preventDefault();
+      if (onShowBlog) onShowBlog();
+      setIsMobileMenuOpen(false);
+    } else if (item.special) {
       handleGuideClick(e);
     } else {
-      // عند الضغط على أي زر آخر، نغلق الدليل إن كان مفتوحًا
       if (onNavigate) onNavigate();
       setIsMobileMenuOpen(false);
     }
@@ -26,6 +29,7 @@ export default function Navbar({ language, setLanguage, onPrint, t, darkMode, on
 
   const navItems = [
     { label: 'Guide', href: '#guide', special: true, icon: BookOpen },
+    { label: 'Blog', href: '#blog', special: true, blog: true, icon: BookOpen },
     { label: 'Home', href: '#home', icon: Home },
     { label: 'Vorlagen', href: '#templates', icon: Layout },
     { label: 'ATS-Check', href: '#ats', icon: Gauge },

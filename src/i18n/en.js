@@ -149,5 +149,12 @@ export const en = {
     conclusion: 'With this tool and guide, you will create a CV that convinces HR managers. Use the live preview and ATS analysis for optimal results.',
     backToEditor: 'Back to Editor'
   },
+  blog: {
+    title: 'Blog',
+    readMore: 'Read more',
+    back: 'Back to Blog',
+    publishedOn: 'Published on',
+    minutesRead: 'min read',
+  },
   footer: '© 2026 Mohamed Chadli. All rights reserved. Professional CV Generator.',
 };

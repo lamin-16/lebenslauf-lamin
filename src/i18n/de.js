@@ -149,5 +149,12 @@ export const de = {
     conclusion: 'Mit diesem Werkzeug und der Anleitung erstellen Sie einen Lebenslauf, der Personalverantwortliche überzeugt. Nutzen Sie die Live-Vorschau und die ATS-Analyse, um ein optimales Ergebnis zu erzielen.',
     backToEditor: 'Zurück zum Editor'
   },
+  blog: {
+    title: 'Blog',
+    readMore: 'Weiterlesen',
+    back: 'Zurück zum Blog',
+    publishedOn: 'Veröffentlicht am',
+    minutesRead: 'Minuten Lesezeit',
+  },
   footer: '© 2026 Mohamed Chadli. Alle Rechte vorbehalten. Professioneller Lebenslauf-Generator.',
 };

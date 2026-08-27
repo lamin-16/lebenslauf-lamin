@@ -14,7 +14,7 @@ import KeywordDensity from './components/KeywordDensity';
 import SectionVisibility from './components/SectionVisibility';
 import SectionOrder from './components/SectionOrder';
 import ShareModal from './components/ShareModal';
-import { ZoomIn, ZoomOut, RotateCcw, Printer, Trash2, Sparkles, Share2, Columns } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, Printer, Trash2, Sparkles, Share2, Columns, ArrowLeft } from 'lucide-react';
 import { lazy, Suspense } from 'react';
 
 const GuidePage = lazy(() => import('./components/GuidePage'));
@@ -32,6 +32,8 @@ export default function App() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [showGuide, setShowGuide] = useState(false);
+  const [showBlog, setShowBlog] = useState(false);
+  const [currentPost, setCurrentPost] = useState(null);
   const [showShare, setShowShare] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
   const [compareMode, setCompareMode] = useState(false);
@@ -217,9 +219,13 @@ export default function App() {
 
   return (
     <div dir={dir} className={`min-h-screen ${darkMode ? 'bg-royal-navy text-white' : 'bg-gray-100 text-gray-900'} font-sans transition-colors`}>
-      <Navbar language={language} setLanguage={setLanguage} onPrint={() => window.print()} t={t} darkMode={darkMode} onShowGuide={() => setShowGuide(true)} onNavigate={() => setShowGuide(false)} />
+      <Navbar language={language} setLanguage={setLanguage} onPrint={() => window.print()} t={t} darkMode={darkMode} onShowGuide={() => setShowGuide(true)} onNavigate={() => setShowGuide(false)} onShowBlog={() => { setShowBlog(true); setCurrentPost(null); }} />
 
-      {showGuide ? (
+      {showBlog && !currentPost ? (
+        <BlogPage posts={blogPosts} onReadPost={(post) => setCurrentPost(post)} language={language} t={t} />
+      ) : showBlog && currentPost ? (
+        <BlogPostView post={currentPost} onBack={() => setCurrentPost(null)} language={language} t={t} />
+      ) : showGuide ? (
         <Suspense fallback={<div>Lädt...</div>}>
           <GuidePage t={t} onBack={() => setShowGuide(false)} />
         </Suspense>
@@ -252,6 +258,10 @@ export default function App() {
               <SpellCheck cvData={cvData} />
               <KeywordDensity cvData={cvData} />
               <Suspense fallback={<div>Lädt...</div>}><HelpMap /></Suspense>
+              <button onClick={() => { setShowBlog(false); setCurrentPost(null); }} className="w-full flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors mb-2">
+                <ArrowLeft className="h-5 w-5" />
+                Zurück zum Editor
+              </button>
               <button onClick={handleReset} className="w-full flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2 px-4 rounded-lg transition-colors">
                 <Trash2 className="h-5 w-5" />
                 Zurücksetzen
