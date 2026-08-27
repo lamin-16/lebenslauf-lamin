@@ -20,6 +20,7 @@ import { lazy, Suspense } from 'react';
 import AdBanner from './components/AdBanner';
 import BlogPage from './components/BlogPage';
 import BlogPostView from './components/BlogPostView';
+import FloatingCopyright from './components/FloatingCopyright';
 import LandingPage from './components/LandingPage';
 
 const GuidePage = lazy(() => import('./components/GuidePage'));
@@ -359,6 +360,7 @@ export default function App() {
           </button>
 
           {showToast && <div className="toast-message">{toastMessage}</div>}
+      <FloatingCopyright language={language} />
           {showShare && <ShareModal shareUrl={shareUrl} onClose={() => setShowShare(false)} />}
 
           <div className="print-only" style={{ display: 'none' }}>

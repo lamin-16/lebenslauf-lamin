@@ -1,5 +1,6 @@
 import React from 'react';
 import { FileText, CheckCircle2, Sparkles, ArrowRight, ShieldCheck, Globe2, LayoutTemplate } from 'lucide-react';
+import FloatingCopyright from './FloatingCopyright';
 
 const texts = {
   de: {
@@ -127,6 +128,7 @@ export default function LandingPage({ language = 'de', onStart }) {
           {t.footerNote}
         </footer>
       </div>
+          <FloatingCopyright language={language} />
     </div>
   );
 }
