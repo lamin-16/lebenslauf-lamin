@@ -123,10 +123,6 @@ export default function LandingPage({ language = 'de', onStart }) {
             {t.cta}
           </button>
         </div>
-
-        <footer className="mt-16 text-center text-sm text-gray-400 border-t border-white/10 pt-6">
-          {t.footerNote}
-        </footer>
       </div>
           <FloatingCopyright language={language} />
     </div>
