@@ -235,6 +235,7 @@ export default function App() {
                 <Share2 className="h-5 w-5 text-royal-gold" />
                 Teilen
               </button>
+              <AdBanner type="sidebar" />
               <div id="ats"><ATSAssistant cvData={cvData} customization={customization} t={t} darkMode={darkMode} /></div>
               <ProgressBar cvData={cvData} darkMode={darkMode} />
               <CustomizationPanel customization={customization} setCustomization={setCustomization} t={t} darkMode={darkMode} />
@@ -301,6 +302,7 @@ export default function App() {
             </div>
           </main>
 
+          <AdBanner type="footer" />
           <footer id="tips" className={`${darkMode ? 'bg-royal-navy border-t border-white/10 text-gray-300' : 'bg-white border-t border-gray-200 text-gray-500'} py-4 text-center text-sm no-print`}>
             {t.footer}
           </footer>
