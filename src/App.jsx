@@ -44,6 +44,7 @@ export default function App() {
   const [shareUrl, setShareUrl] = useState('');
   const [compareMode, setCompareMode] = useState(false);
   const [formMode, setFormMode] = useState('wizard');
+  const [legalType, setLegalType] = useState(null);
 
   const t = translations[language];
   const dir = languages.find(l => l.code === language)?.dir || 'ltr';
