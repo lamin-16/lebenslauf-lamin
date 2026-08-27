@@ -8,28 +8,14 @@ export default function Navbar({ language, setLanguage, onPrint, t, darkMode, on
   const [isLegalOpen, setIsLegalOpen] = useState(false);
   const currentLang = languages.find(l => l.code === language);
 
-  const handleGuideClick = (e) => {
-    e.preventDefault();
-    onShowGuide();
-    setIsMobileMenuOpen(false);
-  };
+  const legalLabel = language === 'de' ? 'Rechtliches' : language === 'ar' ? 'قانوني' : 'Legal';
 
-  const handleBlogClick = (e) => {
-    e.preventDefault();
-    onShowBlog();
-    setIsMobileMenuOpen(false);
-  };
-
+  const handleGuideClick = (e) => { e.preventDefault(); onShowGuide(); setIsMobileMenuOpen(false); };
+  const handleBlogClick = (e) => { e.preventDefault(); onShowBlog(); setIsMobileMenuOpen(false); };
   const handleNavClick = (e, item) => {
-    if (item.blog) {
-      handleBlogClick(e);
-    } else if (item.guide) {
-      handleGuideClick(e);
-    } else {
-      e.preventDefault();
-      onNavigate();
-      setIsMobileMenuOpen(false);
-    }
+    if (item.blog) handleBlogClick(e);
+    else if (item.guide) handleGuideClick(e);
+    else { e.preventDefault(); onNavigate(); setIsMobileMenuOpen(false); }
   };
 
   const navItems = [
@@ -55,7 +41,7 @@ export default function Navbar({ language, setLanguage, onPrint, t, darkMode, on
             </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-5">
             {navItems.map((item, idx) => {
               const Icon = item.icon;
               return (
@@ -71,6 +57,34 @@ export default function Navbar({ language, setLanguage, onPrint, t, darkMode, on
                 </a>
               );
             })}
+
+            {/* قائمة Rechtliches */}
+            <div className="relative">
+              <button
+                onClick={() => setIsLegalOpen(!isLegalOpen)}
+                className="flex items-center gap-1.5 text-sm font-medium text-gray-700 hover:text-royal-gold transition-colors"
+              >
+                <Shield className="h-4 w-4" />
+                {legalLabel}
+                <ChevronDown className="h-3 w-3" />
+              </button>
+              {isLegalOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
+                  <button
+                    onClick={() => { onShowLegal('privacy'); setIsLegalOpen(false); }}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors text-gray-700"
+                  >
+                    {language === 'de' ? 'Datenschutz' : language === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'}
+                  </button>
+                  <button
+                    onClick={() => { onShowLegal('imprint'); setIsLegalOpen(false); }}
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors text-gray-700"
+                  >
+                    {language === 'de' ? 'Impressum' : language === 'ar' ? 'إخلاء المسؤولية' : 'Imprint'}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -98,31 +112,6 @@ export default function Navbar({ language, setLanguage, onPrint, t, darkMode, on
               )}
             </div>
 
-            <div className="relative">
-              <button
-                onClick={() => setIsLegalOpen(!isLegalOpen)}
-                className="p-2 rounded-lg border border-gray-300 hover:border-royal-gold transition-colors text-gray-600"
-                title="Rechtliches"
-              >
-                <Shield className="h-4 w-4" />
-              </button>
-              {isLegalOpen && (
-                <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
-                  <button
-                    onClick={() => { onShowLegal('privacy'); setIsLegalOpen(false); }}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors text-gray-700"
-                  >
-                    {language === 'de' ? 'Datenschutz' : language === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'}
-                  </button>
-                  <button
-                    onClick={() => { onShowLegal('imprint'); setIsLegalOpen(false); }}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors text-gray-700"
-                  >
-                    {language === 'de' ? 'Impressum' : language === 'ar' ? 'إخلاء المسؤولية' : 'Imprint'}
-                  </button>
-                </div>
-              )}
-            </div>
             <button
               onClick={onPrint}
               className="inline-flex items-center gap-2 btn-gold py-2 px-4 rounded-lg text-sm shadow-royal"
@@ -157,6 +146,20 @@ export default function Navbar({ language, setLanguage, onPrint, t, darkMode, on
               </a>
             );
           })}
+          <button
+            onClick={() => { onShowLegal('privacy'); setIsMobileMenuOpen(false); }}
+            className="flex items-center gap-3 py-3 text-sm font-medium text-gray-700 hover:text-royal-gold transition-colors border-b border-gray-50"
+          >
+            <Shield className="h-5 w-5 text-royal-navy" />
+            {language === 'de' ? 'Datenschutz' : language === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'}
+          </button>
+          <button
+            onClick={() => { onShowLegal('imprint'); setIsMobileMenuOpen(false); }}
+            className="flex items-center gap-3 py-3 text-sm font-medium text-gray-700 hover:text-royal-gold transition-colors border-b border-gray-50"
+          >
+            <Shield className="h-5 w-5 text-royal-navy" />
+            {language === 'de' ? 'Impressum' : language === 'ar' ? 'إخلاء المسؤولية' : 'Imprint'}
+          </button>
           <button
             onClick={onPrint}
             className="w-full flex items-center justify-center gap-2 btn-gold font-medium py-3 rounded-lg mt-3"

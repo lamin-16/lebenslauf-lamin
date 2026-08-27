@@ -1,4 +1,5 @@
 import React from 'react';
+import { legalContent } from '../data/legal';
 import { ArrowLeft, FileText, ShieldCheck } from 'lucide-react';
 
 export default function LegalPage({ type, language, onBack }) {
