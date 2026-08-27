@@ -30,19 +30,20 @@ export default function AdBanner({ type = 'sidebar' }) {
 
   if (!adConfig.enabled || !banner || !banner.enabled) return null;
 
-  // تنسيق خاص للإعلان السفلي العريض
-  const isTop = type === 'top';
+  // تنسيق متجاوب: عرض 100% مع حد أقصى حسب النوع
+  const isWide = type === 'footer';
   return (
     <div
       ref={containerRef}
       className="no-print ad-banner-container"
       style={{
-        minHeight: isTop ? 90 : 250,
-        minWidth: isTop ? 728 : 300,
+        width: '100%',
+        maxWidth: isWide ? '728px' : '300px',
+        minHeight: isWide ? 90 : 250,
+        margin: isWide ? '24px auto 0 auto' : '16px auto',
         display: 'flex',
         justifyContent: 'center',
-        margin: isTop ? '24px auto 0 auto' : '0',
-        maxWidth: '100%',
+        alignItems: 'center',
         overflow: 'hidden',
       }}
     >
