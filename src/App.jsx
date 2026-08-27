@@ -126,13 +126,19 @@ export default function App() {
   };
 
   const handleWordExport = () => {
-    const content = generateWordHTML(cvData, customization, t);
-    const blob = new Blob(['\ufeff' + content], { type: 'application/msword' });
+    const content = generateRTF(cvData, customization, t);
+    if (!content || content.length < 20) {
+      showToastMessage('Keine Daten zum Exportieren');
+      return;
+    }
+    const blob = new Blob([content], { type: 'application/rtf;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'lebenslauf.doc';
+    a.download = 'lebenslauf.rtf';
+    document.body.appendChild(a);
     a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
     showToastMessage('Word exportiert');
   };
@@ -316,40 +322,125 @@ export default function App() {
   );
 }
 
-function generateWordHTML(cvData, customization, t) {
+function generateRTF(cvData, customization, t) {
+  if (!cvData || !cvData.personalInfo) return '';
   const { personalInfo, summary, workExperience, education, skills, languages, certifications, projects, volunteer, awards, interests, references } = cvData;
   const title = t.preview.title;
-  let html = `<html><head><meta charset="utf-8"><title>${title}</title></head><body>`;
-  html += `<h1 style="color:${customization.color}">${personalInfo.fullName}</h1><p><strong>${title}</strong></p><p>${personalInfo.email} | ${personalInfo.phone} | ${personalInfo.address}</p><hr/>`;
-  if (summary) html += `<h2>${t.preview.professionalSummary}</h2><p>${summary}</p>`;
-  if (workExperience.length > 0) {
-    html += `<h2>${t.preview.workExperience}</h2>`;
+  const sections = t.preview;
+  const esc = (str) => {
+    if (!str) return '';
+    return String(str).replace(/\\/g, '\\\\').replace(/\{/g, '\{').replace(/}/g, '\}').replace(/\n/g, '\line ');
+  };
+  const rtf = ['{\\rtf1\\ansi\\deff0'];
+  rtf.push('{\\fonttbl{\\f0 Arial;}}');
+  rtf.push('\\f0\\fs24');
+  rtf.push(`{\\b\\fs32 ${esc(personalInfo.fullName || '')}}`);
+  rtf.push('\\line');
+  rtf.push(`${esc(title)}`);
+  rtf.push('\\line');
+  const contacts = [personalInfo.email, personalInfo.phone, personalInfo.address].filter(Boolean).join(' | ');
+  if (contacts) rtf.push(`${esc(contacts)}\\line`);
+  if (personalInfo.linkedin) rtf.push(`LinkedIn: ${esc(personalInfo.linkedin)}\\line`);
+  if (personalInfo.github) rtf.push(`GitHub: ${esc(personalInfo.github)}\\line`);
+  rtf.push('\\line');
+
+  const addSection = (heading, lines) => {
+    if (!heading || lines.length === 0) return;
+    rtf.push(`{\\b\\fs28 ${esc(heading)}}`);
+    rtf.push('\\line');
+    lines.forEach(line => { rtf.push(`${esc(line)}\\line`); });
+    rtf.push('\\line');
+  };
+
+  if (summary && summary.trim()) addSection(sections.professionalSummary, [summary]);
+
+  if (workExperience && workExperience.length > 0) {
+    const lines = [];
     workExperience.forEach(exp => {
-      html += `<p><strong>${exp.role}</strong> – ${exp.company} (${exp.startDate} - ${exp.endDate})</p>`;
-      if (exp.location) html += `<p>Ort: ${exp.location}</p>`;
-      if (exp.bullets?.length) html += `<ul>${exp.bullets.map(b => `<li>${b}</li>`).join('')}</ul>`;
+      lines.push(`${exp.role || ''} – ${exp.company || ''} (${exp.startDate || ''} - ${exp.endDate || ''})`);
+      if (exp.location) lines.push(`Ort: ${exp.location}`);
+      if (exp.bullets && exp.bullets.length) exp.bullets.forEach(b => lines.push(`- ${b}`));
+      lines.push('');
     });
+    addSection(sections.workExperience, lines);
   }
-  if (education.length > 0) {
-    html += `<h2>${t.preview.education}</h2>`;
+
+  if (education && education.length > 0) {
+    const lines = [];
     education.forEach(edu => {
-      html += `<p><strong>${edu.degree}</strong> – ${edu.institution} (${edu.startDate} - ${edu.endDate})</p>`;
-      if (edu.location) html += `<p>Ort: ${edu.location}</p>`;
+      lines.push(`${edu.degree || ''} – ${edu.institution || ''} (${edu.startDate || ''} - ${edu.endDate || ''})`);
+      if (edu.location) lines.push(`Ort: ${edu.location}`);
+      lines.push('');
     });
+    addSection(sections.education, lines);
   }
-  if (skills.length > 0) {
-    html += `<h2>${t.preview.skills}</h2>`;
+
+  if (skills && skills.length > 0) {
     const cats = {};
-    skills.forEach(s => { if (!cats[s.category]) cats[s.category] = []; cats[s.category].push(s.name); });
-    Object.entries(cats).forEach(([cat, names]) => { html += `<p><strong>${cat}:</strong> ${names.join(', ')}</p>`; });
+    skills.forEach(skill => {
+      if (!cats[skill.category]) cats[skill.category] = [];
+      cats[skill.category].push(skill.name);
+    });
+    const lines = Object.entries(cats).map(([cat, names]) => `${cat}: ${names.join(', ')}`);
+    addSection(sections.skills, lines);
   }
-  if (languages.length > 0) { html += `<h2>${t.preview.languages}</h2>`; languages.forEach(l => { html += `<p>${l.language} – ${l.level}</p>`; }); }
-  if (certifications.length > 0) { html += `<h2>${t.preview.certifications}</h2>`; certifications.forEach(c => { html += `<p>${c.name} (${c.date})</p>`; }); }
-  if (projects.length > 0) { html += `<h2>${t.preview.projects}</h2>`; projects.forEach(p => { html += `<p><strong>${p.name}</strong> (${p.startDate} - ${p.endDate})</p>${p.link ? '<p>Link: ' + p.link + '</p>' : ''}${p.description ? '<p>' + p.description + '</p>' : ''}`; }); }
-  if (volunteer.length > 0) { html += `<h2>${t.preview.volunteer}</h2>`; volunteer.forEach(v => { html += `<p><strong>${v.role}</strong> – ${v.organization} (${v.startDate} - ${v.endDate})</p>${v.description ? '<p>' + v.description + '</p>' : ''}`; }); }
-  if (awards.length > 0) { html += `<h2>${t.preview.awards}</h2>`; awards.forEach(a => { html += `<p><strong>${a.title}</strong> – ${a.issuer} (${a.date})</p>${a.description ? '<p>' + a.description + '</p>' : ''}`; }); }
-  if (interests.length > 0) { html += `<h2>${t.preview.interests}</h2><p>${interests.map(i => i.name).join(', ')}</p>`; }
-  if (references.length > 0) { html += `<h2>${t.preview.references}</h2>`; references.forEach(r => { html += `<p><strong>${r.name}</strong>, ${r.position}, ${r.company}</p>${r.contact ? '<p>Kontakt: ' + r.contact + '</p>' : ''}`; }); }
-  html += '</body></html>';
-  return html;
+
+  if (languages && languages.length > 0) {
+    const lines = languages.map(lang => `${lang.language} – ${lang.level}`);
+    addSection(sections.languages, lines);
+  }
+
+  if (certifications && certifications.length > 0) {
+    const lines = certifications.map(cert => `${cert.name} (${cert.date})`);
+    addSection(sections.certifications, lines);
+  }
+
+  if (projects && projects.length > 0) {
+    const lines = [];
+    projects.forEach(proj => {
+      lines.push(`${proj.name || ''} (${proj.startDate || ''} - ${proj.endDate || ''})`);
+      if (proj.link) lines.push(`Link: ${proj.link}`);
+      if (proj.description) lines.push(proj.description);
+      lines.push('');
+    });
+    addSection(sections.projects, lines);
+  }
+
+  if (volunteer && volunteer.length > 0) {
+    const lines = [];
+    volunteer.forEach(vol => {
+      lines.push(`${vol.role || ''} – ${vol.organization || ''} (${vol.startDate || ''} - ${vol.endDate || ''})`);
+      if (vol.description) lines.push(vol.description);
+      lines.push('');
+    });
+    addSection(sections.volunteer, lines);
+  }
+
+  if (awards && awards.length > 0) {
+    const lines = [];
+    awards.forEach(award => {
+      lines.push(`${award.title || ''} – ${award.issuer || ''} (${award.date || ''})`);
+      if (award.description) lines.push(award.description);
+      lines.push('');
+    });
+    addSection(sections.awards, lines);
+  }
+
+  if (interests && interests.length > 0) {
+    const lines = [interests.map(i => i.name).join(', ')];
+    addSection(sections.interests, lines);
+  }
+
+  if (references && references.length > 0) {
+    const lines = [];
+    references.forEach(ref => {
+      lines.push(`${ref.name || ''}, ${ref.position || ''}, ${ref.company || ''}`);
+      if (ref.contact) lines.push(`Kontakt: ${ref.contact}`);
+      lines.push('');
+    });
+    addSection(sections.references, lines);
+  }
+
+  rtf.push('}');
+  return rtf.join('\\n');
 }
