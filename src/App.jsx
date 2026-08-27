@@ -20,8 +20,6 @@ import { lazy, Suspense } from 'react';
 import AdBanner from './components/AdBanner';
 import BlogPage from './components/BlogPage';
 import BlogPostView from './components/BlogPostView';
-import LegalPage from './components/LegalPage';
-import { legalContent } from './data/legal';
 
 const GuidePage = lazy(() => import('./components/GuidePage'));
 const HelpMap = lazy(() => import('./components/HelpMap'));
@@ -44,7 +42,6 @@ export default function App() {
   const [shareUrl, setShareUrl] = useState('');
   const [compareMode, setCompareMode] = useState(false);
   const [formMode, setFormMode] = useState('wizard');
-  const [legalType, setLegalType] = useState(null);
 
   const t = translations[language];
   const dir = languages.find(l => l.code === language)?.dir || 'ltr';
@@ -248,11 +245,7 @@ export default function App() {
 
   return (
     <div dir={dir} className={`min-h-screen ${darkMode ? 'bg-royal-navy text-white' : 'bg-gray-100 text-gray-900'} font-sans transition-colors`}>
-      <Navbar language={language} setLanguage={setLanguage} onPrint={() => window.print()} t={t} darkMode={darkMode} onShowGuide={() => { setShowGuide(true); setShowBlog(false); setCurrentPost(null); setLegalType(null); }} onNavigate={() => { setShowGuide(false); setShowBlog(false); setCurrentPost(null); setLegalType(null); }} onShowBlog={() => { setShowBlog(true); setShowGuide(false); setCurrentPost(null); setLegalType(null); }} onShowLegal={(type) => { setLegalType(type); setShowGuide(false); setShowBlog(false); setCurrentPost(null); }} />
-
-      {legalType ? (
-        <LegalPage type={legalType} language={language} onBack={() => setLegalType(null)} />
-      ) : showBlog && !currentPost ? (
+      <Navbar language={language} setLanguage={setLanguage} onPrint={() => window.print()} t={t} darkMode={darkMode} onShowGuide={() => { setShowGuide(true); setShowBlog(false); setCurrentPost(null);  }} onNavigate={() => { setShowGuide(false); setShowBlog(false); setCurrentPost(null);  }} onShowBlog={() => { setShowBlog(true); setShowGuide(false); setCurrentPost(null);  }} /> {showBlog && !currentPost ? (
         <BlogPage posts={blogPosts} onReadPost={(post) => setCurrentPost(post)} language={language} t={t} />
       ) : showBlog && currentPost ? (
         <BlogPostView post={currentPost} onBack={() => setCurrentPost(null)} language={language} t={t} />
