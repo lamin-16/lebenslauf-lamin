@@ -339,8 +339,6 @@ export default function App() {
           <AdBanner type="footer" />
           <footer id="tips" className={`${darkMode ? 'bg-royal-navy border-t border-white/10 text-gray-300' : 'bg-white border-t border-gray-200 text-gray-500'} py-4 text-center text-sm no-print`}>
         <div className="flex justify-center gap-4 mb-2">
-          <button onClick={() => setLegalType('privacy')} className="hover:text-royal-gold transition-colors">Datenschutz</button>
-          <button onClick={() => setLegalType('imprint')} className="hover:text-royal-gold transition-colors">Impressum</button>
         </div>
             {t.footer}
           </footer>
