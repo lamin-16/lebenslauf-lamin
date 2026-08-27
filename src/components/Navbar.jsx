@@ -34,7 +34,7 @@ export default function Navbar({ language, setLanguage, onPrint, t, darkMode, on
   const navItems = [
     { label: 'Home', href: '#home', icon: Home },
     { label: 'Guide', href: '#guide', guide: true, icon: BookOpen },
-    { label: 'Blog', href: '#blog', blog: true, icon: BookOpen },
+    { label: 'Blog', href: '#blog', blog: true, icon: FileText },
     { label: 'Vorlagen', href: '#templates', icon: Layout },
     { label: 'ATS-Check', href: '#ats', icon: Gauge },
     { label: 'Tipps', href: '#tips', icon: Lightbulb },

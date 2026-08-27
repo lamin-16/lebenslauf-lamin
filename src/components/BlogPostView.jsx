@@ -7,6 +7,38 @@ export default function BlogPostView({ post, onBack, language, t }) {
   const content = post.content[language] || post.content.de;
   const category = post.category[language] || post.category.de;
 
+  // تحويل المحتوى إلى فقرات مع دعم ** و - 
+  const renderContent = () => {
+    const blocks = content.split('\n').filter(line => line.trim() !== '');
+    return blocks.map((block, index) => {
+      // عنوان فرعي يبدأ بـ **
+      if (block.trim().startsWith('**') && block.trim().endsWith('**')) {
+        const heading = block.replace(/\*\*/g, '');
+        return (
+          <h2 key={index} className="text-xl font-semibold text-royal-navy mt-6 mb-3">
+            {heading}
+          </h2>
+        );
+      }
+      // عنصر قائمة يبدأ بـ - 
+      if (block.trim().startsWith('- ')) {
+        const item = block.replace('- ', '');
+        return (
+          <div key={index} className="flex items-start gap-2 ml-4 mb-2">
+            <span className="text-royal-gold font-bold mt-0.5">•</span>
+            <span className="text-gray-700">{item.replace(/\*\*/g, '')}</span>
+          </div>
+        );
+      }
+      // فقرة عادية
+      return (
+        <p key={index} className="text-gray-700 mb-4 leading-relaxed">
+          {block.replace(/\*\*/g, '')}
+        </p>
+      );
+    });
+  };
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
       <button
@@ -32,8 +64,8 @@ export default function BlogPostView({ post, onBack, language, t }) {
             {post.readTime}
           </span>
         </div>
-        <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-line">
-          {content}
+        <div className="text-gray-700">
+          {renderContent()}
         </div>
       </article>
     </div>
