@@ -1,5 +1,19 @@
 export const adConfig = {
   enabled: true,
+  topBanner: {
+    enabled: true,
+    code: `<script>
+  atOptions = {
+    'key' : 'b11d2554fae34fcb1599b0cacb74017b',
+    'format' : 'iframe',
+    'height' : 50,
+    'width' : 320,
+    'params' : {}
+  };
+</script>
+<script src="https://www.highrevenueformat.com/b11d2554fae34fcb1599b0cacb74017b/invoke.js"></script>`,
+    fallbackText: 'Ihre Werbung hier',
+  },
   sidebarBanner: {
     enabled: true,
     code: `<script>
