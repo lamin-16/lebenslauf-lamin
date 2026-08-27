@@ -1,0 +1,26 @@
+export const templateList = [
+  // النماذج الأساسية السابقة
+  { id: 'classic', name: 'Klassisch', description: 'Zeitlose Eleganz', color: '#1e3a8a', bgColor: '#ffffff', accentColor: '#1e3a8a', layout: 'single', headerStyle: 'left', photoShape: 'square' },
+  { id: 'modern', name: 'Modern', description: 'Klar strukturiert', color: '#0ea5e9', bgColor: '#f8fafc', accentColor: '#0ea5e9', layout: 'two', headerStyle: 'left', photoShape: 'circle' },
+  { id: 'elegant', name: 'Elegant', description: 'Edel und zentriert', color: '#7c3aed', bgColor: '#ffffff', accentColor: '#7c3aed', layout: 'single', headerStyle: 'center', photoShape: 'rounded' },
+  { id: 'executive', name: 'Executive', description: 'Für Führungskräfte', color: '#dc2626', bgColor: '#fef2f2', accentColor: '#dc2626', layout: 'two', headerStyle: 'left', photoShape: 'square' },
+  { id: 'creative', name: 'Kreativ', description: 'Für Design und Medien', color: '#f59e0b', bgColor: '#fffbeb', accentColor: '#f59e0b', layout: 'single', headerStyle: 'left', photoShape: 'rounded' },
+  { id: 'compact', name: 'Kompakt', description: 'Alles auf einer Seite', color: '#059669', bgColor: '#ffffff', accentColor: '#059669', layout: 'single', headerStyle: 'left', photoShape: 'circle', spacing: 'compact' },
+  { id: 'business-modern', name: 'Business Modern', description: 'Professionell und dynamisch', color: '#2563eb', bgColor: '#ffffff', accentColor: '#2563eb', layout: 'sidebar', headerStyle: 'left', photoShape: 'rounded', sidebarColor: '#f1f5f9' },
+  { id: 'minimal', name: 'Minimal', description: 'Weniger ist mehr', color: '#374151', bgColor: '#ffffff', accentColor: '#374151', layout: 'single', headerStyle: 'left', photoShape: 'none', spacing: 'minimal', hideLines: true },
+  { id: 'timeline', name: 'Timeline', description: 'Zeitstrahl-Stil', color: '#0d9488', bgColor: '#ffffff', accentColor: '#0d9488', layout: 'single', headerStyle: 'left', photoShape: 'circle', timelineStyle: true },
+  { id: 'dark', name: 'Dark Elegance', description: 'Edel und dunkel', color: '#e5e7eb', bgColor: '#111827', accentColor: '#e5e7eb', layout: 'single', headerStyle: 'left', photoShape: 'rounded', darkMode: true },
+  // نماذج عالمية إضافية جديدة
+  { id: 'scandinavian', name: 'Scandinavian', description: 'Klare Linien, helle Farben', color: '#3b82f6', bgColor: '#fafafa', accentColor: '#3b82f6', layout: 'single', headerStyle: 'left', photoShape: 'circle', minimalLines: true },
+  { id: 'french', name: 'French', description: 'Romantisch und fein', color: '#ec4899', bgColor: '#fdf2f8', accentColor: '#ec4899', layout: 'single', headerStyle: 'center', photoShape: 'rounded', serifFont: true },
+  { id: 'swiss', name: 'Swiss', description: 'Präzise und funktional', color: '#d97706', bgColor: '#fffbeb', accentColor: '#d97706', layout: 'single', headerStyle: 'left', photoShape: 'square', gridLines: true },
+  { id: 'american', name: 'American', description: 'Kraftvoll und direkt', color: '#1e3a8a', bgColor: '#eff6ff', accentColor: '#1e3a8a', layout: 'two', headerStyle: 'left', photoShape: 'square', boldHeadings: true },
+  { id: 'british', name: 'British', description: 'Konservativ und vornehm', color: '#475569', bgColor: '#ffffff', accentColor: '#475569', layout: 'single', headerStyle: 'left', photoShape: 'none', underlineTitles: true },
+  { id: 'dutch', name: 'Dutch', description: 'Praktisch und offen', color: '#e11d48', bgColor: '#fef2f2', accentColor: '#e11d48', layout: 'sidebar', headerStyle: 'left', photoShape: 'rounded', sidebarColor: '#fef2f2' },
+  { id: 'italian', name: 'Italian', description: 'Elegant und farbenfroh', color: '#f59e0b', bgColor: '#fffbeb', accentColor: '#f59e0b', layout: 'single', headerStyle: 'center', photoShape: 'circle', goldAccent: true },
+  { id: 'spanish', name: 'Spanish', description: 'Warm und ausdrucksstark', color: '#f97316', bgColor: '#fff7ed', accentColor: '#f97316', layout: 'single', headerStyle: 'left', photoShape: 'rounded', strongColor: true },
+  { id: 'scottish', name: 'Scottish', description: 'Kräftig und traditionell', color: '#166534', bgColor: '#f0fdf4', accentColor: '#166534', layout: 'two', headerStyle: 'left', photoShape: 'square', greenAccent: true },
+  { id: 'nordic', name: 'Nordic', description: 'Minimal und hell', color: '#0f766e', bgColor: '#f0fdfa', accentColor: '#0f766e', layout: 'single', headerStyle: 'left', photoShape: 'circle', tinyLines: true },
+  { id: 'japanese', name: 'Japanese', description: 'Zen und strukturiert', color: '#334155', bgColor: '#ffffff', accentColor: '#334155', layout: 'single', headerStyle: 'center', photoShape: 'none', subtleBorders: true },
+  { id: 'australian', name: 'Australian', description: 'Modern und freundlich', color: '#0284c7', bgColor: '#f0f9ff', accentColor: '#0284c7', layout: 'single', headerStyle: 'left', photoShape: 'rounded', blueAccent: true },
+];

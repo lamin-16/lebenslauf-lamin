@@ -1,0 +1,355 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { translations, languages } from './i18n';
+import { defaultCVData, defaultCustomization, defaultSectionVisibility, defaultSectionOrder } from './data/defaults';
+import { sampleProfiles } from './data/samples';
+import FormBuilder from './components/FormBuilder';
+import CVPreview from './preview/CVPreview';
+import CustomizationPanel from './components/CustomizationPanel';
+import ATSAssistant from './components/ATSAssistant';
+import ProgressBar from './components/ProgressBar';
+import Navbar from './components/Navbar';
+import FeatureShowcase from './components/FeatureShowcase';
+import SpellCheck from './components/SpellCheck';
+import KeywordDensity from './components/KeywordDensity';
+import SectionVisibility from './components/SectionVisibility';
+import SectionOrder from './components/SectionOrder';
+import ShareModal from './components/ShareModal';
+import { ZoomIn, ZoomOut, RotateCcw, Printer, Trash2, Sparkles, Share2, Columns } from 'lucide-react';
+import { lazy, Suspense } from 'react';
+
+const GuidePage = lazy(() => import('./components/GuidePage'));
+const HelpMap = lazy(() => import('./components/HelpMap'));
+
+export default function App() {
+  const [language, setLanguage] = useState('de');
+  const [cvData, setCvData] = useState(defaultCVData);
+  const [customization, setCustomization] = useState(defaultCustomization);
+  const [sectionVisibility, setSectionVisibility] = useState(defaultSectionVisibility);
+  const [sectionOrder, setSectionOrder] = useState(defaultSectionOrder);
+  const [activeSection, setActiveSection] = useState('personal');
+  const [zoom, setZoom] = useState(0.85);
+  const [darkMode, setDarkMode] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [showGuide, setShowGuide] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+  const [compareMode, setCompareMode] = useState(false);
+  const [formMode, setFormMode] = useState('wizard');
+
+  const t = translations[language];
+  const dir = languages.find(l => l.code === language)?.dir || 'ltr';
+
+  useEffect(() => {
+    localStorage.setItem('cvData', JSON.stringify(cvData));
+    localStorage.setItem('customization', JSON.stringify(customization));
+    showToastMessage('Gespeichert');
+  }, [cvData, customization]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const encoded = params.get('cv');
+    if (encoded) {
+      try {
+        const decoded = decodeURIComponent(escape(atob(encoded)));
+        const data = JSON.parse(decoded);
+        if (data.cvData) setCvData(data.cvData);
+        if (data.customization) setCustomization(data.customization);
+      } catch (e) {
+        console.error('Ungültiger Link');
+      }
+    }
+  }, []);
+
+  const showToastMessage = useCallback((msg) => {
+    setToastMessage(msg);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 2000);
+  }, []);
+
+  const updateField = useCallback((section, id, field, value) => {
+    setCvData(prev => {
+      const newData = { ...prev };
+      if (section === 'personalInfo') newData.personalInfo = { ...newData.personalInfo, [field]: value };
+      else if (section === 'summary') newData.summary = value;
+      else if (['workExperience', 'education', 'skills', 'languages', 'certifications', 'projects', 'volunteer', 'awards', 'interests', 'references'].includes(section)) {
+        newData[section] = newData[section].map(item => {
+          if (item.id === id) return { ...item, [field]: value };
+          return item;
+        });
+      }
+      return newData;
+    });
+  }, []);
+
+  const addItem = useCallback((section, item) => setCvData(prev => ({ ...prev, [section]: [...prev[section], item] })), []);
+  const removeItem = useCallback((section, id) => setCvData(prev => ({ ...prev, [section]: prev[section].filter(item => item.id !== id) })), []);
+  const updateBullet = useCallback((section, id, bulletIndex, value) => {
+    setCvData(prev => {
+      const updated = prev[section].map(item => {
+        if (item.id === id) {
+          const bullets = [...item.bullets];
+          bullets[bulletIndex] = value;
+          return { ...item, bullets };
+        }
+        return item;
+      });
+      return { ...prev, [section]: updated };
+    });
+  }, []);
+  const addBullet = useCallback((section, id) => setCvData(prev => ({
+    ...prev,
+    [section]: prev[section].map(item => item.id === id ? { ...item, bullets: [...item.bullets, ''] } : item),
+  })), []);
+  const removeBullet = useCallback((section, id, bulletIndex) => setCvData(prev => ({
+    ...prev,
+    [section]: prev[section].map(item => item.id === id ? { ...item, bullets: item.bullets.filter((_, i) => i !== bulletIndex) } : item),
+  })), []);
+
+  const reorderSections = useCallback((newOrder) => setSectionOrder(newOrder), []);
+  const toggleSectionVisibility = useCallback((key) => setSectionVisibility(prev => ({ ...prev, [key]: !prev[key] })), []);
+
+  const zoomIn = () => setZoom(prev => Math.min(prev + 0.1, 1.5));
+  const zoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.4));
+  const resetZoom = () => setZoom(0.85);
+
+  const handleExport = () => {
+    const dataStr = JSON.stringify({ cvData, customization, sectionOrder }, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'lebenslauf-daten.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToastMessage('Exportiert');
+  };
+
+  const handleWordExport = () => {
+    const content = generateWordHTML(cvData, customization, t);
+    const blob = new Blob(['\ufeff' + content], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'lebenslauf.doc';
+    a.click();
+    URL.revokeObjectURL(url);
+    showToastMessage('Word exportiert');
+  };
+
+  const handleImport = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const data = JSON.parse(event.target.result);
+            if (data.cvData) setCvData(data.cvData);
+            if (data.customization) setCustomization(data.customization);
+            if (data.sectionOrder) setSectionOrder(data.sectionOrder);
+            showToastMessage('Daten importiert');
+          } catch (err) {
+            showToastMessage('Ungültige Datei');
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  };
+
+  const handleReset = () => {
+    if (confirm('Alle Daten zurücksetzen?')) {
+      setCvData(defaultCVData);
+      setCustomization(defaultCustomization);
+      setSectionVisibility(defaultSectionVisibility);
+      setSectionOrder(defaultSectionOrder);
+      showToastMessage('Zurückgesetzt');
+    }
+  };
+
+  const handleQuickDraft = () => {
+    const randomIndex = Math.floor(Math.random() * sampleProfiles.length);
+    const profile = sampleProfiles[randomIndex];
+    const merged = {
+      ...defaultCVData,
+      ...profile,
+      personalInfo: { ...defaultCVData.personalInfo, ...profile.personalInfo },
+      workExperience: profile.workExperience?.length ? profile.workExperience : defaultCVData.workExperience,
+      education: profile.education?.length ? profile.education : defaultCVData.education,
+      skills: profile.skills?.length ? profile.skills : defaultCVData.skills,
+      languages: profile.languages?.length ? profile.languages : defaultCVData.languages,
+      certifications: profile.certifications?.length ? profile.certifications : defaultCVData.certifications,
+      projects: profile.projects?.length ? profile.projects : [],
+      volunteer: profile.volunteer?.length ? profile.volunteer : [],
+      awards: profile.awards?.length ? profile.awards : [],
+      interests: profile.interests?.length ? profile.interests : [],
+      references: profile.references?.length ? profile.references : [],
+    };
+    setCvData(merged);
+    showToastMessage('Schnellentwurf geladen');
+  };
+
+  const handleShare = () => {
+    const data = JSON.stringify({ cvData, customization, sectionOrder });
+    const encoded = btoa(unescape(encodeURIComponent(data)));
+    setShareUrl(`${window.location.origin}${window.location.pathname}?cv=${encoded}`);
+    setShowShare(true);
+  };
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      document.exitFullscreen();
+    }
+  };
+
+  return (
+    <div dir={dir} className={`min-h-screen ${darkMode ? 'bg-royal-navy text-white' : 'bg-gray-100 text-gray-900'} font-sans transition-colors`}>
+      <Navbar language={language} setLanguage={setLanguage} onPrint={() => window.print()} t={t} darkMode={darkMode} onShowGuide={() => setShowGuide(true)} onNavigate={() => setShowGuide(false)} />
+
+      {showGuide ? (
+        <Suspense fallback={<div>Lädt...</div>}>
+          <GuidePage t={t} onBack={() => setShowGuide(false)} />
+        </Suspense>
+      ) : (
+        <>
+          <main id="home" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-1 space-y-6 no-print">
+              <button onClick={handleQuickDraft} className="w-full flex items-center justify-center gap-2 bg-royal-navy/10 hover:bg-royal-navy/20 text-royal-navy font-medium py-2 px-4 rounded-lg transition-colors">
+                <Sparkles className="h-5 w-5 text-royal-gold" />
+                Schnellentwurf
+              </button>
+              <button onClick={handleShare} className="w-full flex items-center justify-center gap-2 bg-royal-navy/10 hover:bg-royal-navy/20 text-royal-navy font-medium py-2 px-4 rounded-lg transition-colors">
+                <Share2 className="h-5 w-5 text-royal-gold" />
+                Teilen
+              </button>
+              <div id="ats"><ATSAssistant cvData={cvData} customization={customization} t={t} darkMode={darkMode} /></div>
+              <ProgressBar cvData={cvData} darkMode={darkMode} />
+              <CustomizationPanel customization={customization} setCustomization={setCustomization} t={t} darkMode={darkMode} />
+              <SectionVisibility visibility={sectionVisibility} toggleSection={toggleSectionVisibility} t={t} />
+              <SectionOrder order={sectionOrder} onReorder={reorderSections} t={t} />
+              <FeatureShowcase
+                onToggleDark={() => setDarkMode(!darkMode)}
+                onFullscreen={toggleFullscreen}
+                onExport={handleExport}
+                onImport={handleImport}
+                onWordExport={handleWordExport}
+                darkMode={darkMode}
+              />
+              <SpellCheck cvData={cvData} />
+              <KeywordDensity cvData={cvData} />
+              <Suspense fallback={<div>Lädt...</div>}><HelpMap /></Suspense>
+              <button onClick={handleReset} className="w-full flex items-center justify-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2 px-4 rounded-lg transition-colors">
+                <Trash2 className="h-5 w-5" />
+                Zurücksetzen
+              </button>
+              <FormBuilder
+                t={t}
+                cvData={cvData}
+                customization={customization}
+                updateField={updateField}
+                addItem={addItem}
+                removeItem={removeItem}
+                updateBullet={updateBullet}
+                addBullet={addBullet}
+                removeBullet={removeBullet}
+                activeSection={activeSection}
+                setActiveSection={setActiveSection}
+                darkMode={darkMode}
+                formMode={formMode}
+                setFormMode={setFormMode}
+              />
+            </div>
+
+            <div className="lg:col-span-2">
+              <div className="flex items-center justify-between mb-4 no-print">
+                <h2 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-royal-navy'}`}>Vorschau</h2>
+                <div className="flex items-center gap-2">
+                  <button onClick={zoomOut} className="p-2 bg-white rounded-lg border border-gray-300 hover:bg-gray-50" title="Verkleinern"><ZoomOut className="h-4 w-4" /></button>
+                  <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-600'} w-12 text-center`}>{Math.round(zoom * 100)}%</span>
+                  <button onClick={zoomIn} className="p-2 bg-white rounded-lg border border-gray-300 hover:bg-gray-50" title="Vergrößern"><ZoomIn className="h-4 w-4" /></button>
+                  <button onClick={resetZoom} className="p-2 bg-white rounded-lg border border-gray-300 hover:bg-gray-50" title="Zurücksetzen"><RotateCcw className="h-4 w-4" /></button>
+                  <button onClick={() => setCompareMode(!compareMode)} className="ml-2 p-2 bg-white rounded-lg border border-gray-300 hover:bg-gray-50" title="Vergleichsmodus">
+                    <Columns className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+              <div className="preview-scroll" style={{ overflow: 'auto', maxHeight: '80vh', border: '1px solid #e5e7eb', borderRadius: '12px', backgroundColor: darkMode ? '#1e2a5e' : '#f9fafb' }}>
+                <div style={{ transform: `scale(${zoom})`, transformOrigin: 'top center', transition: 'transform 0.2s ease', width: 'fit-content', margin: '0 auto' }}>
+                  {compareMode ? (
+                    <div className="grid grid-cols-2 gap-4">
+                      <div><CVPreview cvData={cvData} customization={customization} t={t} sectionVisibility={sectionVisibility} sectionOrder={sectionOrder} /></div>
+                      <div><CVPreview cvData={cvData} customization={{ ...customization, template: 'classic' }} t={t} sectionVisibility={sectionVisibility} sectionOrder={sectionOrder} /></div>
+                    </div>
+                  ) : (
+                    <CVPreview cvData={cvData} customization={customization} t={t} sectionVisibility={sectionVisibility} sectionOrder={sectionOrder} />
+                  )}
+                </div>
+              </div>
+            </div>
+          </main>
+
+          <footer id="tips" className={`${darkMode ? 'bg-royal-navy border-t border-white/10 text-gray-300' : 'bg-white border-t border-gray-200 text-gray-500'} py-4 text-center text-sm no-print`}>
+            {t.footer}
+          </footer>
+
+          <button onClick={() => window.print()} className="fixed bottom-6 right-6 z-50 flex items-center gap-2 btn-gold px-5 py-3 rounded-full shadow-2xl no-print">
+            <Printer className="h-5 w-5" />
+            <span className="font-semibold">{t.preview.downloadPDF}</span>
+          </button>
+
+          {showToast && <div className="toast-message">{toastMessage}</div>}
+          {showShare && <ShareModal shareUrl={shareUrl} onClose={() => setShowShare(false)} />}
+
+          <div className="print-only" style={{ display: 'none' }}>
+            <CVPreview cvData={cvData} customization={customization} t={t} sectionVisibility={sectionVisibility} sectionOrder={sectionOrder} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function generateWordHTML(cvData, customization, t) {
+  const { personalInfo, summary, workExperience, education, skills, languages, certifications, projects, volunteer, awards, interests, references } = cvData;
+  const title = t.preview.title;
+  let html = `<html><head><meta charset="utf-8"><title>${title}</title></head><body>`;
+  html += `<h1 style="color:${customization.color}">${personalInfo.fullName}</h1><p><strong>${title}</strong></p><p>${personalInfo.email} | ${personalInfo.phone} | ${personalInfo.address}</p><hr/>`;
+  if (summary) html += `<h2>${t.preview.professionalSummary}</h2><p>${summary}</p>`;
+  if (workExperience.length > 0) {
+    html += `<h2>${t.preview.workExperience}</h2>`;
+    workExperience.forEach(exp => {
+      html += `<p><strong>${exp.role}</strong> – ${exp.company} (${exp.startDate} - ${exp.endDate})</p>`;
+      if (exp.location) html += `<p>Ort: ${exp.location}</p>`;
+      if (exp.bullets?.length) html += `<ul>${exp.bullets.map(b => `<li>${b}</li>`).join('')}</ul>`;
+    });
+  }
+  if (education.length > 0) {
+    html += `<h2>${t.preview.education}</h2>`;
+    education.forEach(edu => {
+      html += `<p><strong>${edu.degree}</strong> – ${edu.institution} (${edu.startDate} - ${edu.endDate})</p>`;
+      if (edu.location) html += `<p>Ort: ${edu.location}</p>`;
+    });
+  }
+  if (skills.length > 0) {
+    html += `<h2>${t.preview.skills}</h2>`;
+    const cats = {};
+    skills.forEach(s => { if (!cats[s.category]) cats[s.category] = []; cats[s.category].push(s.name); });
+    Object.entries(cats).forEach(([cat, names]) => { html += `<p><strong>${cat}:</strong> ${names.join(', ')}</p>`; });
+  }
+  if (languages.length > 0) { html += `<h2>${t.preview.languages}</h2>`; languages.forEach(l => { html += `<p>${l.language} – ${l.level}</p>`; }); }
+  if (certifications.length > 0) { html += `<h2>${t.preview.certifications}</h2>`; certifications.forEach(c => { html += `<p>${c.name} (${c.date})</p>`; }); }
+  if (projects.length > 0) { html += `<h2>${t.preview.projects}</h2>`; projects.forEach(p => { html += `<p><strong>${p.name}</strong> (${p.startDate} - ${p.endDate})</p>${p.link ? '<p>Link: ' + p.link + '</p>' : ''}${p.description ? '<p>' + p.description + '</p>' : ''}`; }); }
+  if (volunteer.length > 0) { html += `<h2>${t.preview.volunteer}</h2>`; volunteer.forEach(v => { html += `<p><strong>${v.role}</strong> – ${v.organization} (${v.startDate} - ${v.endDate})</p>${v.description ? '<p>' + v.description + '</p>' : ''}`; }); }
+  if (awards.length > 0) { html += `<h2>${t.preview.awards}</h2>`; awards.forEach(a => { html += `<p><strong>${a.title}</strong> – ${a.issuer} (${a.date})</p>${a.description ? '<p>' + a.description + '</p>' : ''}`; }); }
+  if (interests.length > 0) { html += `<h2>${t.preview.interests}</h2><p>${interests.map(i => i.name).join(', ')}</p>`; }
+  if (references.length > 0) { html += `<h2>${t.preview.references}</h2>`; references.forEach(r => { html += `<p><strong>${r.name}</strong>, ${r.position}, ${r.company}</p>${r.contact ? '<p>Kontakt: ' + r.contact + '</p>' : ''}`; }); }
+  html += '</body></html>';
+  return html;
+}
