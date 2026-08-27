@@ -255,6 +255,7 @@ export default function App() {
         </Suspense>
       ) : (
         <>
+          <AdBanner type="top" />
           <main id="home" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-1 space-y-6 no-print">
               <button onClick={handleQuickDraft} className="w-full flex items-center justify-center gap-2 bg-royal-navy/10 hover:bg-royal-navy/20 text-royal-navy font-medium py-2 px-4 rounded-lg transition-colors">
