@@ -16,6 +16,7 @@ import SectionOrder from './components/SectionOrder';
 import ShareModal from './components/ShareModal';
 import { ZoomIn, ZoomOut, RotateCcw, Printer, Trash2, Sparkles, Share2, Columns, ArrowLeft } from 'lucide-react';
 import { lazy, Suspense } from 'react';
+import AdBanner from './components/AdBanner';
 
 const GuidePage = lazy(() => import('./components/GuidePage'));
 const HelpMap = lazy(() => import('./components/HelpMap'));
