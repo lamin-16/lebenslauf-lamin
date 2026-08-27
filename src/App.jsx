@@ -43,6 +43,28 @@ export default function App() {
   const dir = languages.find(l => l.code === language)?.dir || 'ltr';
 
   useEffect(() => {
+    // تنظيف البيانات التالفة من localStorage
+    try {
+      const storedCv = localStorage.getItem('cvData');
+      if (storedCv) {
+        const parsed = JSON.parse(storedCv);
+        if (!parsed || typeof parsed !== 'object' || !parsed.personalInfo) {
+          localStorage.removeItem('cvData');
+        }
+      }
+      const storedCustom = localStorage.getItem('customization');
+      if (storedCustom) {
+        const parsed = JSON.parse(storedCustom);
+        if (!parsed || typeof parsed !== 'object' || !parsed.template) {
+          localStorage.removeItem('customization');
+        }
+      }
+    } catch (e) {
+      localStorage.clear();
+    }
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem('cvData', JSON.stringify(cvData));
     localStorage.setItem('customization', JSON.stringify(customization));
     showToastMessage('Gespeichert');
