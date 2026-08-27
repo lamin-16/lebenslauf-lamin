@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { translations, languages } from './i18n';
 import { defaultCVData, defaultCustomization, defaultSectionVisibility, defaultSectionOrder } from './data/defaults';
 import { sampleProfiles } from './data/samples';
+import { blogPosts } from './data/blogPosts';
 import FormBuilder from './components/FormBuilder';
 import CVPreview from './preview/CVPreview';
 import CustomizationPanel from './components/CustomizationPanel';
@@ -18,6 +19,7 @@ import { ZoomIn, ZoomOut, RotateCcw, Printer, Trash2, Sparkles, Share2, Columns,
 import { lazy, Suspense } from 'react';
 import AdBanner from './components/AdBanner';
 import BlogPage from './components/BlogPage';
+import BlogPostView from './components/BlogPostView';
 
 const GuidePage = lazy(() => import('./components/GuidePage'));
 const HelpMap = lazy(() => import('./components/HelpMap'));
