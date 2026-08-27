@@ -10,11 +10,9 @@ export default function AdBanner({ type = 'sidebar' }) {
     const container = containerRef.current;
     container.innerHTML = '';
 
-    // إنشاء عناصر من كود HTML
     const temp = document.createElement('div');
     temp.innerHTML = banner.code;
 
-    // نسخ العناصر غير السكربتية
     const nodes = temp.childNodes;
     nodes.forEach(node => {
       if (node.tagName === 'SCRIPT') {
@@ -32,11 +30,21 @@ export default function AdBanner({ type = 'sidebar' }) {
 
   if (!adConfig.enabled || !banner || !banner.enabled) return null;
 
+  // تنسيق خاص للإعلان السفلي العريض
+  const isTop = type === 'top';
   return (
     <div
       ref={containerRef}
       className="no-print ad-banner-container"
-      style={{ minWidth: 300, minHeight: 250, display: 'flex', justifyContent: 'center' }}
+      style={{
+        minHeight: isTop ? 90 : 250,
+        minWidth: isTop ? 728 : 300,
+        display: 'flex',
+        justifyContent: 'center',
+        margin: isTop ? '24px auto 0 auto' : '0',
+        maxWidth: '100%',
+        overflow: 'hidden',
+      }}
     >
       {!banner.code && (
         <div className="bg-gradient-to-r from-royal-navy/5 to-royal-gold/10 border border-royal-gold/30 rounded-xl p-4 text-center w-full">
