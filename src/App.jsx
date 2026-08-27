@@ -20,6 +20,8 @@ import { lazy, Suspense } from 'react';
 import AdBanner from './components/AdBanner';
 import BlogPage from './components/BlogPage';
 import BlogPostView from './components/BlogPostView';
+import LegalPage from './components/LegalPage';
+import { legalContent } from './data/legal';
 
 const GuidePage = lazy(() => import('./components/GuidePage'));
 const HelpMap = lazy(() => import('./components/HelpMap'));
@@ -247,7 +249,9 @@ export default function App() {
     <div dir={dir} className={`min-h-screen ${darkMode ? 'bg-royal-navy text-white' : 'bg-gray-100 text-gray-900'} font-sans transition-colors`}>
       <Navbar language={language} setLanguage={setLanguage} onPrint={() => window.print()} t={t} darkMode={darkMode} onShowGuide={() => { setShowGuide(true); setShowBlog(false); setCurrentPost(null); }} onNavigate={() => { setShowGuide(false); setShowBlog(false); setCurrentPost(null); }} onShowBlog={() => { setShowBlog(true); setShowGuide(false); setCurrentPost(null); }} />
 
-      {showBlog && !currentPost ? (
+      {legalType ? (
+        <LegalPage type={legalType} language={language} onBack={() => setLegalType(null)} />
+      ) : showBlog && !currentPost ? (
         <BlogPage posts={blogPosts} onReadPost={(post) => setCurrentPost(post)} language={language} t={t} />
       ) : showBlog && currentPost ? (
         <BlogPostView post={currentPost} onBack={() => setCurrentPost(null)} language={language} t={t} />
@@ -340,6 +344,10 @@ export default function App() {
 
           <AdBanner type="footer" />
           <footer id="tips" className={`${darkMode ? 'bg-royal-navy border-t border-white/10 text-gray-300' : 'bg-white border-t border-gray-200 text-gray-500'} py-4 text-center text-sm no-print`}>
+        <div className="flex justify-center gap-4 mb-2">
+          <button onClick={() => setLegalType('privacy')} className="hover:text-royal-gold transition-colors">Datenschutz</button>
+          <button onClick={() => setLegalType('imprint')} className="hover:text-royal-gold transition-colors">Impressum</button>
+        </div>
             {t.footer}
           </footer>
 
