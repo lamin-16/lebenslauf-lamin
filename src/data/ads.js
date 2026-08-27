@@ -1,19 +1,31 @@
-// ضع هنا معرفات الإعلانات الخاصة بك من Monetag لاحقًا
 export const adConfig = {
   enabled: true,
-  topBanner: {
-    enabled: true,
-    code: '', // سيتم وضع كود الإعلان هنا بعد التحقق
-    fallbackText: 'Ihre Werbung hier',
-  },
   sidebarBanner: {
     enabled: true,
-    code: '',
+    code: `<script>
+  atOptions = {
+    'key' : 'f18ce742602d0a6a09dbeedbb488140d',
+    'format' : 'iframe',
+    'height' : 250,
+    'width' : 300,
+    'params' : {}
+  };
+</script>
+<script src="https://www.highrevenueformat.com/f18ce742602d0a6a09dbeedbb488140d/invoke.js"></script>`,
     fallbackText: 'Ihre Werbung hier',
   },
   footerBanner: {
     enabled: true,
-    code: '',
+    code: `<script>
+  atOptions = {
+    'key' : 'f18ce742602d0a6a09dbeedbb488140d',
+    'format' : 'iframe',
+    'height' : 250,
+    'width' : 300,
+    'params' : {}
+  };
+</script>
+<script src="https://www.highrevenueformat.com/f18ce742602d0a6a09dbeedbb488140d/invoke.js"></script>`,
     fallbackText: 'Ihre Werbung hier',
   },
 };
