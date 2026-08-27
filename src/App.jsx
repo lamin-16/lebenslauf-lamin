@@ -245,7 +245,7 @@ export default function App() {
 
   return (
     <div dir={dir} className={`min-h-screen ${darkMode ? 'bg-royal-navy text-white' : 'bg-gray-100 text-gray-900'} font-sans transition-colors`}>
-      <Navbar language={language} setLanguage={setLanguage} onPrint={() => window.print()} t={t} darkMode={darkMode} onShowGuide={() => setShowGuide(true)} onNavigate={() => setShowGuide(false)} onShowBlog={() => { setShowBlog(true); setCurrentPost(null); }} />
+      <Navbar language={language} setLanguage={setLanguage} onPrint={() => window.print()} t={t} darkMode={darkMode} onShowGuide={() => { setShowGuide(true); setShowBlog(false); setCurrentPost(null); }} onNavigate={() => { setShowGuide(false); setShowBlog(false); setCurrentPost(null); }} onShowBlog={() => { setShowBlog(true); setShowGuide(false); setCurrentPost(null); }} />
 
       {showBlog && !currentPost ? (
         <BlogPage posts={blogPosts} onReadPost={(post) => setCurrentPost(post)} language={language} t={t} />
