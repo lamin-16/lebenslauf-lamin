@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, ArrowRight, CheckCircle2, Globe2, LayoutTemplate } from 'lucide-react';
+import { FileText, ArrowRight, CheckCircle2, Globe2, LayoutTemplate, GraduationCap, Briefcase, Users, UserRound } from 'lucide-react';
 import AdBanner from './AdBanner';
 
 const content = {
@@ -10,6 +10,13 @@ const content = {
     feature1: 'Über 20 Vorlagen',
     feature2: 'Live-Vorschau',
     feature3: 'Deutsch, Englisch, Arabisch',
+    audiencesTitle: 'Geeignet für alle Berufsgruppen',
+    audiences: [
+      { icon: GraduationCap, label: 'Studenten' },
+      { icon: UserRound, label: 'Berufseinsteiger' },
+      { icon: Briefcase, label: 'Fachkräfte' },
+      { icon: Users, label: 'Führungskräfte' },
+    ],
   },
   en: {
     title: 'Free Tabular CV',
@@ -18,6 +25,13 @@ const content = {
     feature1: 'Over 20 templates',
     feature2: 'Live preview',
     feature3: 'German, English, Arabic',
+    audiencesTitle: 'Suitable for all professional groups',
+    audiences: [
+      { icon: GraduationCap, label: 'Students' },
+      { icon: UserRound, label: 'Career starters' },
+      { icon: Briefcase, label: 'Specialists' },
+      { icon: Users, label: 'Managers' },
+    ],
   },
   ar: {
     title: 'سيرة ذاتية جدولية مجانية',
@@ -26,6 +40,13 @@ const content = {
     feature1: 'أكثر من 20 قالبًا',
     feature2: 'معاينة حية',
     feature3: 'الألمانية، الإنجليزية، العربية',
+    audiencesTitle: 'مناسب لجميع الفئات المهنية',
+    audiences: [
+      { icon: GraduationCap, label: 'الطلاب' },
+      { icon: UserRound, label: 'حديثو التخرج' },
+      { icon: Briefcase, label: 'المهنيون' },
+      { icon: Users, label: 'المدراء' },
+    ],
   },
 };
 
@@ -74,6 +95,22 @@ export default function LandingPage({ language = 'de', onStart }) {
           <span className="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-full px-4 py-2">
             <Globe2 className="h-4 w-4 text-royal-gold" /> {t.feature3}
           </span>
+        </div>
+
+        {/* الفئات المستهدفة */}
+        <div className="mt-10">
+          <h2 className="text-sm font-medium text-gray-400 mb-4">{t.audiencesTitle}</h2>
+          <div className="flex flex-wrap justify-center gap-3">
+            {t.audiences.map((aud, idx) => {
+              const Icon = aud.icon;
+              return (
+                <div key={idx} className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2">
+                  <Icon className="h-4 w-4 text-royal-gold" />
+                  <span className="text-sm text-gray-200">{aud.label}</span>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* إعلان واحد في الأعلى فقط */}

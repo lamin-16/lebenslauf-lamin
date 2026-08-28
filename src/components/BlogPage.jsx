@@ -1,10 +1,18 @@
 import React from 'react';
-import { ArrowRight, BookOpen, Clock, Calendar } from 'lucide-react';
+import { ArrowRight, BookOpen, Clock, Calendar, ArrowLeft } from 'lucide-react';
 
-export default function BlogPage({ posts, onReadPost, language, t }) {
+export default function BlogPage({ posts, onReadPost, language, t, onBack }) {
   const blog = t.blog || {};
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
+      <button
+        onClick={onBack}
+        className="flex items-center gap-2 text-royal-navy hover:text-royal-gold transition-colors mb-6 no-print"
+      >
+        <ArrowLeft className="h-5 w-5" />
+        {blog.backToEditor || 'Zurück zum Editor'}
+      </button>
+
       <h1 className="text-3xl font-bold text-royal-navy mb-8 flex items-center gap-2">
         <BookOpen className="h-8 w-8 text-royal-gold" />
         {blog.title || 'Blog'}

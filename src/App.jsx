@@ -261,9 +261,9 @@ export default function App() {
   return (
     <div dir={dir} className={`min-h-screen ${darkMode ? 'bg-royal-navy text-white' : 'bg-gray-100 text-gray-900'} font-sans transition-colors`}>
       <Navbar language={language} setLanguage={setLanguage} onPrint={() => window.print()} t={t} darkMode={darkMode} onShowGuide={() => { setShowGuide(true); setShowBlog(false); setCurrentPost(null);  }} onNavigate={() => { setShowGuide(false); setShowBlog(false); setCurrentPost(null);  }} onShowBlog={() => { setShowBlog(true); setShowGuide(false); setCurrentPost(null);  }} /> {showBlog && !currentPost ? (
-        <BlogPage posts={blogPosts} onReadPost={(post) => setCurrentPost(post)} language={language} t={t} />
+        <BlogPage posts={blogPosts} onReadPost={(post) => setCurrentPost(post)} language={language} t={t} onBack={() => { setShowBlog(false); setCurrentPost(null); setShowLanding(false); }} />
       ) : showBlog && currentPost ? (
-        <BlogPostView post={currentPost} onBack={() => setCurrentPost(null)} language={language} t={t} />
+        <BlogPostView post={currentPost} onBack={() => setCurrentPost(null)} onBackToEditor={() => { setShowBlog(false); setCurrentPost(null); setShowLanding(false); }} language={language} t={t} />
       ) : showGuide ? (
         <Suspense fallback={<div>Lädt...</div>}>
           <GuidePage t={t} onBack={() => setShowGuide(false)} />

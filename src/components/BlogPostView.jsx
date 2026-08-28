@@ -1,17 +1,15 @@
 import React from 'react';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 
-export default function BlogPostView({ post, onBack, language, t }) {
+export default function BlogPostView({ post, onBack, language, t, onBackToEditor }) {
   const blog = t.blog || {};
   const title = post.title[language] || post.title.de;
   const content = post.content[language] || post.content.de;
   const category = post.category[language] || post.category.de;
 
-  // تحويل المحتوى إلى فقرات مع دعم ** و - 
   const renderContent = () => {
     const blocks = content.split('\n').filter(line => line.trim() !== '');
     return blocks.map((block, index) => {
-      // عنوان فرعي يبدأ بـ **
       if (block.trim().startsWith('**') && block.trim().endsWith('**')) {
         const heading = block.replace(/\*\*/g, '');
         return (
@@ -20,7 +18,6 @@ export default function BlogPostView({ post, onBack, language, t }) {
           </h2>
         );
       }
-      // عنصر قائمة يبدأ بـ - 
       if (block.trim().startsWith('- ')) {
         const item = block.replace('- ', '');
         return (
@@ -30,7 +27,6 @@ export default function BlogPostView({ post, onBack, language, t }) {
           </div>
         );
       }
-      // فقرة عادية
       return (
         <p key={index} className="text-gray-700 mb-4 leading-relaxed">
           {block.replace(/\*\*/g, '')}
@@ -41,13 +37,22 @@ export default function BlogPostView({ post, onBack, language, t }) {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      <button
-        onClick={onBack}
-        className="flex items-center gap-2 text-royal-navy hover:text-royal-gold transition-colors mb-6 no-print"
-      >
-        <ArrowLeft className="h-5 w-5" />
-        {blog.back || 'Zurück zum Blog'}
-      </button>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 no-print">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 text-royal-navy hover:text-royal-gold transition-colors"
+        >
+          <ArrowLeft className="h-5 w-5" />
+          {blog.back || 'Zurück zum Blog'}
+        </button>
+        <button
+          onClick={onBackToEditor}
+          className="flex items-center gap-2 text-gray-500 hover:text-royal-gold transition-colors text-sm"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {blog.backToEditor || 'Zurück zum Editor'}
+        </button>
+      </div>
 
       <article className="royal-card p-6 rounded-2xl">
         <span className="inline-block px-3 py-1 rounded-full bg-royal-navy/5 text-xs font-medium text-royal-gold mb-3">
