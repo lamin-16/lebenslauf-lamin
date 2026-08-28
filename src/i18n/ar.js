@@ -156,5 +156,5 @@ export const ar = {
     publishedOn: 'نُشر في',
     minutesRead: 'دقائق قراءة',
   },
-  footer: '© 2026 محمد شاذلي. جميع الحقوق محفوظة. مولد سيرة ذاتية احترافي.',
+  footer: '© 2026 Lebenslauf LAMIN. جميع الحقوق محفوظة.',
 };

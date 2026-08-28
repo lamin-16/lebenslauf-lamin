@@ -156,5 +156,5 @@ export const de = {
     publishedOn: 'Veröffentlicht am',
     minutesRead: 'Minuten Lesezeit',
   },
-  footer: '© 2026 Mohamed Chadli. Alle Rechte vorbehalten. Professioneller Lebenslauf-Generator.',
+  footer: '© 2026 Lebenslauf LAMIN. Alle Rechte vorbehalten.',
 };

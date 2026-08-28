@@ -156,5 +156,5 @@ export const en = {
     publishedOn: 'Published on',
     minutesRead: 'min read',
   },
-  footer: '© 2026 Mohamed Chadli. All rights reserved. Professional CV Generator.',
+  footer: '© 2026 Lebenslauf LAMIN. All rights reserved.',
 };
