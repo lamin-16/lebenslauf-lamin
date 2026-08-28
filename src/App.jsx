@@ -20,6 +20,7 @@ import { lazy, Suspense } from 'react';
 import AdBanner from './components/AdBanner';
 import BlogPage from './components/BlogPage';
 import BlogPostView from './components/BlogPostView';
+import LandingPage from './components/LandingPage';
 
 const GuidePage = lazy(() => import('./components/GuidePage'));
 const HelpMap = lazy(() => import('./components/HelpMap'));
@@ -42,6 +43,7 @@ export default function App() {
   const [shareUrl, setShareUrl] = useState('');
   const [compareMode, setCompareMode] = useState(false);
   const [formMode, setFormMode] = useState('wizard');
+  const [showLanding, setShowLanding] = useState(true);
 
   const t = translations[language];
   const dir = languages.find(l => l.code === language)?.dir || 'ltr';
@@ -73,6 +75,11 @@ export default function App() {
     localStorage.setItem('customization', JSON.stringify(customization));
     showToastMessage('Gespeichert');
   }, [cvData, customization]);
+
+  useEffect(() => {
+    const visited = localStorage.getItem('hasVisitedLamin');
+    if (visited === 'true') setShowLanding(false);
+  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -242,6 +249,14 @@ export default function App() {
       document.exitFullscreen();
     }
   };
+
+  if (showLanding) {
+    return (
+      <div dir={dir} className="min-h-screen font-sans">
+        <LandingPage language={language} onStart={() => { localStorage.setItem('hasVisitedLamin', 'true'); setShowLanding(false); }} />
+      </div>
+    );
+  }
 
   return (
     <div dir={dir} className={`min-h-screen ${darkMode ? 'bg-royal-navy text-white' : 'bg-gray-100 text-gray-900'} font-sans transition-colors`}>
