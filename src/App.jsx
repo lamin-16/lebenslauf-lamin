@@ -338,7 +338,10 @@ export default function App() {
           </main>
 
           <AdBanner type="footer" />
-          <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className="block text-[10px] tracking-wider text-gray-400 hover:text-royal-gold transition-colors mt-2">Datenschutz</a>
+          <div className="flex justify-center gap-5 mt-2">
+            <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className="text-[10px] tracking-wider text-gray-400 hover:text-royal-gold transition-colors">Datenschutz</a>
+            <a href="/impressum.html" target="_blank" rel="noopener noreferrer" className="text-[10px] tracking-wider text-gray-400 hover:text-royal-gold transition-colors">Rechtliches</a>
+          </div>
           <footer id="tips" className={`${darkMode ? 'bg-royal-navy border-t border-white/10 text-gray-300' : 'bg-white border-t border-gray-200 text-gray-500'} py-4 text-center text-sm no-print`}>
         <div className="flex justify-center gap-4 mb-2">
         </div>
