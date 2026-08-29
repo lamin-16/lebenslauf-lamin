@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /assets/
+Sitemap: https://lebenslauf-lamin.vercel.app/sitemap.xml
