@@ -3,7 +3,7 @@ import { Mail, Phone, MapPin, Link2, Code2, Calendar, MapPinned } from 'lucide-r
 import { templateList } from '../data/templates';
 import { defaultSectionOrder } from '../data/defaults';
 
-export default function CVPreview({ cvData, customization, t, sectionVisibility = {}, sectionOrder = defaultSectionOrder }) {
+function CVPreview({ cvData, customization, t, sectionVisibility = {}, sectionOrder = defaultSectionOrder }) {
   const { personalInfo, summary, workExperience, education, skills, languages, certifications, projects, volunteer, awards, interests, references } = cvData;
   const { template, color, font, photoPosition, fontSize, lineSpacing } = customization;
 
@@ -301,3 +301,5 @@ export default function CVPreview({ cvData, customization, t, sectionVisibility 
     </div>
   );
 }
+
+export default React.memo(CVPreview);

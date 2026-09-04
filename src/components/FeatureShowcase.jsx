@@ -9,28 +9,64 @@ export default function FeatureShowcase({ onToggleDark, onFullscreen, onExport, 
         Zauberfunktionen
       </h3>
       <div className="grid grid-cols-2 gap-2">
-        <button onClick={() => alert('Automatische Verbesserung aktiviert!')} className="flex flex-col items-center gap-1 p-3 rounded-xl bg-royal-navy/5 hover:bg-royal-navy/10 transition-colors">
-          <Wand2 className="h-6 w-6 text-royal-gold" />
+        <button
+          type="button"
+          onClick={() => alert('Automatische Verbesserung aktiviert!')}
+          aria-label="Text verbessern"
+          title="Text verbessern"
+          className="flex flex-col items-center gap-1 p-3 rounded-xl bg-royal-navy/5 hover:bg-royal-navy/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-royal-gold"
+        >
+          <Wand2 className="h-6 w-6 text-royal-gold" aria-hidden="true" />
           <span className="text-xs font-medium">Verbessern</span>
         </button>
-        <button onClick={onToggleDark} className="flex flex-col items-center gap-1 p-3 rounded-xl bg-royal-navy/5 hover:bg-royal-navy/10 transition-colors">
-          <Moon className="h-6 w-6 text-royal-gold" />
+        <button
+          type="button"
+          onClick={onToggleDark}
+          aria-label={darkMode ? 'Zur hellen Ansicht wechseln' : 'Zur dunklen Ansicht wechseln'}
+          title={darkMode ? 'Helle Ansicht' : 'Dunkle Ansicht'}
+          className="flex flex-col items-center gap-1 p-3 rounded-xl bg-royal-navy/5 hover:bg-royal-navy/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-royal-gold"
+        >
+          <Moon className="h-6 w-6 text-royal-gold" aria-hidden="true" />
           <span className="text-xs font-medium">{darkMode ? 'Hell' : 'Dunkel'}</span>
         </button>
-        <button onClick={onFullscreen} className="flex flex-col items-center gap-1 p-3 rounded-xl bg-royal-navy/5 hover:bg-royal-navy/10 transition-colors">
-          <Maximize className="h-6 w-6 text-royal-gold" />
+        <button
+          type="button"
+          onClick={onFullscreen}
+          aria-label="Vollbildmodus umschalten"
+          title="Vollbild"
+          className="flex flex-col items-center gap-1 p-3 rounded-xl bg-royal-navy/5 hover:bg-royal-navy/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-royal-gold"
+        >
+          <Maximize className="h-6 w-6 text-royal-gold" aria-hidden="true" />
           <span className="text-xs font-medium">Vollbild</span>
         </button>
-        <button onClick={onExport} className="flex flex-col items-center gap-1 p-3 rounded-xl bg-royal-navy/5 hover:bg-royal-navy/10 transition-colors">
-          <Download className="h-6 w-6 text-royal-gold" />
+        <button
+          type="button"
+          onClick={onExport}
+          aria-label="Daten exportieren"
+          title="Export"
+          className="flex flex-col items-center gap-1 p-3 rounded-xl bg-royal-navy/5 hover:bg-royal-navy/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-royal-gold"
+        >
+          <Download className="h-6 w-6 text-royal-gold" aria-hidden="true" />
           <span className="text-xs font-medium">Export</span>
         </button>
-        <button onClick={onImport} className="flex flex-col items-center gap-1 p-3 rounded-xl bg-royal-navy/5 hover:bg-royal-navy/10 transition-colors">
-          <Upload className="h-6 w-6 text-royal-gold" />
+        <button
+          type="button"
+          onClick={onImport}
+          aria-label="Daten importieren"
+          title="Import"
+          className="flex flex-col items-center gap-1 p-3 rounded-xl bg-royal-navy/5 hover:bg-royal-navy/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-royal-gold"
+        >
+          <Upload className="h-6 w-6 text-royal-gold" aria-hidden="true" />
           <span className="text-xs font-medium">Import</span>
         </button>
-        <button onClick={onWordExport} className="flex flex-col items-center gap-1 p-3 rounded-xl bg-royal-navy/5 hover:bg-royal-navy/10 transition-colors">
-          <FileText className="h-6 w-6 text-royal-gold" />
+        <button
+          type="button"
+          onClick={onWordExport}
+          aria-label="Word-Datei herunterladen"
+          title="Word"
+          className="flex flex-col items-center gap-1 p-3 rounded-xl bg-royal-navy/5 hover:bg-royal-navy/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-royal-gold"
+        >
+          <FileText className="h-6 w-6 text-royal-gold" aria-hidden="true" />
           <span className="text-xs font-medium">Word</span>
         </button>
       </div>

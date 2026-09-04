@@ -16,7 +16,6 @@ export default function SpellCheck({ cvData }) {
   ].join(' ');
 
   const checkResults = [];
-  // نستدعي دالة الفحص يدويًا هنا لتجنب مشاكل import
   const mistakes = [
     { pattern: /\bdass\b/gi, suggestion: 'dass korrekt verwendet?', type: 'grammar' },
     { pattern: /\bseit\b/gi, suggestion: 'seit/seid prüfen', type: 'grammar' },
@@ -40,10 +39,13 @@ export default function SpellCheck({ cvData }) {
 
   return (
     <div className="royal-card p-5 rounded-2xl space-y-3">
-      <h3 className="font-semibold text-royal-navy flex items-center gap-2">
-        <AlertTriangle className="h-5 w-5 text-yellow-500" />
-        Sprachprüfung
-      </h3>
+      <div>
+        <h3 className="font-semibold text-royal-navy flex items-center gap-2">
+          <AlertTriangle className="h-5 w-5 text-yellow-500" />
+          Rechtschreib-Schnellprüfung
+        </h3>
+        <p className="text-xs text-gray-500 mt-1">Einfache regelbasierte Prüfung – kein vollständiger Duden-Check</p>
+      </div>
       <div className="space-y-2">
         {checkResults.map((res, idx) => (
           <div key={idx} className="flex items-start gap-2 text-sm">

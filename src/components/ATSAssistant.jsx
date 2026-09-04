@@ -10,40 +10,65 @@ export default function ATSAssistant({ cvData, customization, t }) {
     let keywordMatches = [];
     let missingKeywords = [];
 
-    if (cvData.summary && cvData.summary.trim().length > 20) scoreParts.push(15);
-    else tips.push(t.ats.tip1);
+    // 1. الأقسام الأساسية
+    if (cvData.summary && cvData.summary.trim().length > 20) scoreParts.push(10);
+    else tips.push('Füge ein aussagekräftiges Kurzprofil hinzu.');
 
-    if (cvData.workExperience.length > 0) scoreParts.push(15);
+    if (cvData.workExperience?.length > 0) scoreParts.push(15);
     else tips.push('Füge Berufserfahrung hinzu.');
 
-    if (cvData.education.length > 0) scoreParts.push(10);
+    if (cvData.education?.length > 0) scoreParts.push(10);
     else tips.push('Füge Ausbildung hinzu.');
 
-    if (cvData.skills.length >= 5) scoreParts.push(10);
+    if (cvData.skills?.length >= 5) scoreParts.push(10);
     else tips.push('Füge mehr Fähigkeiten hinzu.');
 
-    if (cvData.languages.length > 0) scoreParts.push(5);
+    if (cvData.languages?.length > 0) scoreParts.push(5);
     else tips.push('Füge Sprachkenntnisse hinzu.');
 
-    if (cvData.certifications.length > 0) scoreParts.push(5);
+    if (cvData.certifications?.length > 0) scoreParts.push(5);
     else tips.push('Füge Zertifikate hinzu.');
 
-    if (customization.atsMode || !cvData.personalInfo.photo || customization.photoPosition === 'none') scoreParts.push(5);
+    // 2. بيانات الاتصال
+    const hasEmail = !!cvData.personalInfo?.email;
+    const hasPhone = !!cvData.personalInfo?.phone;
+    if (hasEmail && hasPhone) scoreParts.push(10);
+    else tips.push('Vollständige Kontaktdaten sind wichtig.');
+
+    // 3. تواريخ
+    const hasDates = cvData.workExperience?.some(e => e.startDate || e.endDate) ||
+                     cvData.education?.some(e => e.startDate || e.endDate);
+    if (hasDates) scoreParts.push(5);
+    else tips.push('Gib Zeiträume für Erfahrungen und Ausbildung an.');
+
+    // 4. صورة/رسومات
+    if (customization.atsMode || !cvData.personalInfo?.photo || customization.photoPosition === 'none') scoreParts.push(5);
     else tips.push(t.ats.tip3);
 
+    // 5. أحرف غير عادية أو تنسيق مشكل
+    const allText = JSON.stringify(cvData).toLowerCase();
+    const unusualChars = allText.match(/[#*_^~<>|\\]/g);
+    if (unusualChars && unusualChars.length > 5) {
+      tips.push('Entferne Sonderzeichen wie *, #, _ aus dem Text. ATS-Systeme mögen klaren Text.');
+    } else {
+      scoreParts.push(5);
+    }
+
+    // 6. طول النص
     const totalWords = (cvData.summary?.split(' ').length || 0) +
-      cvData.workExperience.reduce((acc, exp) => acc + (exp.bullets?.join(' ').split(' ').length || 0), 0);
+      cvData.workExperience?.reduce((acc, exp) => acc + (exp.bullets?.join(' ').split(' ').length || 0), 0);
     if (totalWords > 50 && totalWords < 600) scoreParts.push(5);
     else tips.push(t.ats.tip6);
 
+    // 7. تحليل الوصف الوظيفي
     if (jobDescription.trim().length > 0) {
       const keywords = [...new Set(jobDescription.toLowerCase().match(/\b[a-zA-ZäöüÄÖÜß]{4,}\b/g) || [])];
       const cvText = [
         cvData.summary,
-        ...cvData.workExperience.map(e => `${e.role} ${e.company} ${e.bullets?.join(' ')}`),
-        ...cvData.skills.map(s => s.name),
-        ...cvData.languages.map(l => l.language),
-        ...cvData.certifications.map(c => c.name),
+        ...(cvData.workExperience || []).map(e => `${e.role} ${e.company} ${e.bullets?.join(' ')}`),
+        ...(cvData.skills || []).map(s => s.name),
+        ...(cvData.languages || []).map(l => l.language),
+        ...(cvData.certifications || []).map(c => c.name),
       ].join(' ').toLowerCase();
 
       keywordMatches = keywords.filter(kw => cvText.includes(kw));
@@ -61,17 +86,20 @@ export default function ATSAssistant({ cvData, customization, t }) {
   }, [cvData, customization, t, jobDescription]);
 
   const getScoreLabel = () => {
-    if (analysis.score >= 90) return t.ats.excellent;
-    if (analysis.score >= 70) return t.ats.good;
-    if (analysis.score >= 50) return t.ats.moderate;
-    return t.ats.poor;
+    if (analysis.score >= 90) return 'Sehr gut';
+    if (analysis.score >= 70) return 'Gut';
+    if (analysis.score >= 50) return 'Mittel';
+    return 'Schwach';
   };
 
   return (
     <div className="royal-card p-5 rounded-2xl space-y-4">
       <div className="flex items-center gap-3">
         <GaugeCircle className="h-6 w-6 text-royal-gold" />
-        <h3 className="font-semibold text-lg text-royal-navy">{t.ats.title}</h3>
+        <div>
+          <h3 className="font-semibold text-lg text-royal-navy">ATS-Kompatibilitätsanalyse</h3>
+          <p className="text-xs text-gray-500">Heuristische Analyse – keine Garantie für ATS-Erfolg</p>
+        </div>
       </div>
       <div className="flex items-center gap-4">
         <div className="text-3xl font-bold text-royal-navy">{analysis.score}%</div>

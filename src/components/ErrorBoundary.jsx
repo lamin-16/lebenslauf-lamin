@@ -16,7 +16,16 @@ class ErrorBoundary extends React.Component {
   }
 
   handleReset = () => {
-    localStorage.clear();
+    const keysToRemove = [
+      'cvData',
+      'customization',
+      'sectionOrder',
+      'sectionVisibility',
+      'hasVisitedLamin',
+    ];
+    keysToRemove.forEach(key => {
+      localStorage.removeItem(key);
+    });
     window.location.href = '/';
   };
 

@@ -10,7 +10,6 @@ export default function KeywordDensity({ cvData }) {
       ...cvData.certifications.map(c => c.name),
     ].join(' ').toLowerCase();
 
-    // قائمة كلمات مفتاحية شائعة في السير الذاتية
     const commonWords = [
       'entwickelt', 'geleitet', 'optimiert', 'analysiert', 'team', 'projekt',
       'management', 'strategie', 'kommunikation', 'erfahrung', 'leiter',
@@ -32,7 +31,8 @@ export default function KeywordDensity({ cvData }) {
 
   return (
     <div className="royal-card p-5 rounded-2xl">
-      <h3 className="font-semibold text-royal-navy mb-4">Keyword-Häufigkeit</h3>
+      <h3 className="font-semibold text-royal-navy mb-1">Keyword-Häufigkeit</h3>
+      <p className="text-xs text-gray-500 mb-4">Basierend auf einer begrenzten Liste häufiger Begriffe</p>
       <div className="space-y-3">
         {keywords.map((kw, idx) => (
           <div key={idx}>

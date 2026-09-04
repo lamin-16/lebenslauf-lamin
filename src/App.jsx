@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import LZString from 'lz-string';
+import { z } from 'zod';
 import { translations, languages } from './i18n';
 import { defaultCVData, defaultCustomization, defaultSectionVisibility, defaultSectionOrder } from './data/defaults';
 import { sampleProfiles } from './data/samples';
@@ -14,16 +16,136 @@ import SpellCheck from './components/SpellCheck';
 import KeywordDensity from './components/KeywordDensity';
 import SectionVisibility from './components/SectionVisibility';
 import SectionOrder from './components/SectionOrder';
-import ShareModal from './components/ShareModal';
 import { ZoomIn, ZoomOut, RotateCcw, Printer, Trash2, Sparkles, Share2, Columns, ArrowLeft } from 'lucide-react';
 import { lazy, Suspense } from 'react';
 import AdBanner from './components/AdBanner';
-import BlogPage from './components/BlogPage';
-import BlogPostView from './components/BlogPostView';
-import LandingPage from './components/LandingPage';
 
 const GuidePage = lazy(() => import('./components/GuidePage'));
 const HelpMap = lazy(() => import('./components/HelpMap'));
+const ShareModal = lazy(() => import('./components/ShareModal'));
+const BlogPage = lazy(() => import('./components/BlogPage'));
+const BlogPostView = lazy(() => import('./components/BlogPostView'));
+const LandingPage = lazy(() => import('./components/LandingPage'));
+
+
+const LAMIN_SCHEMA_VERSION = 1;
+
+const CVSchema = z.object({
+  personalInfo: z.object({
+    fullName: z.string().optional(),
+    photo: z.string().nullable().optional(),
+    email: z.string().optional(),
+    phone: z.string().optional(),
+    address: z.string().optional(),
+    dateOfBirth: z.string().optional(),
+    placeOfBirth: z.string().optional(),
+    linkedin: z.string().optional(),
+    github: z.string().optional(),
+    website: z.string().optional(),
+  }).optional(),
+  summary: z.string().optional(),
+  workExperience: z.array(z.object({
+    id: z.string().optional(),
+    company: z.string().optional(),
+    role: z.string().optional(),
+    location: z.string().optional(),
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
+    bullets: z.array(z.string()).optional(),
+  })).optional(),
+  education: z.array(z.object({
+    id: z.string().optional(),
+    degree: z.string().optional(),
+    institution: z.string().optional(),
+    location: z.string().optional(),
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
+  })).optional(),
+  skills: z.array(z.object({
+    id: z.string().optional(),
+    category: z.string().optional(),
+    name: z.string().optional(),
+    level: z.string().optional(),
+  })).optional(),
+  languages: z.array(z.object({
+    id: z.string().optional(),
+    language: z.string().optional(),
+    level: z.string().optional(),
+  })).optional(),
+  certifications: z.array(z.object({
+    id: z.string().optional(),
+    name: z.string().optional(),
+    date: z.string().optional(),
+  })).optional(),
+  projects: z.array(z.object({
+    id: z.string().optional(),
+    name: z.string().optional(),
+    description: z.string().optional(),
+    link: z.string().optional(),
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
+  })).optional(),
+  volunteer: z.array(z.object({
+    id: z.string().optional(),
+    organization: z.string().optional(),
+    role: z.string().optional(),
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
+    description: z.string().optional(),
+  })).optional(),
+  awards: z.array(z.object({
+    id: z.string().optional(),
+    title: z.string().optional(),
+    issuer: z.string().optional(),
+    date: z.string().optional(),
+    description: z.string().optional(),
+  })).optional(),
+  interests: z.array(z.object({
+    id: z.string().optional(),
+    name: z.string().optional(),
+  })).optional(),
+  references: z.array(z.object({
+    id: z.string().optional(),
+    name: z.string().optional(),
+    position: z.string().optional(),
+    company: z.string().optional(),
+    contact: z.string().optional(),
+  })).optional(),
+});
+
+const customizationSchema = z.object({
+  template: z.string().optional(),
+  color: z.string().optional(),
+  font: z.string().optional(),
+  photoPosition: z.string().optional(),
+  fontSize: z.number().optional(),
+  lineSpacing: z.number().optional(),
+  atsMode: z.boolean().optional(),
+  sectionTitles: z.record(z.string()).optional(),
+}).optional();
+
+const sectionOrderSchema = z.array(z.string()).optional();
+
+const ImportedDataSchema = z.object({
+  schemaVersion: z.number().optional(),
+  cvData: CVSchema,
+  customization: customizationSchema,
+  sectionOrder: sectionOrderSchema,
+});
+
+const migrate = (data) => {
+  if (!data.schemaVersion || data.schemaVersion < LAMIN_SCHEMA_VERSION) {
+    // هنا يمكن تحويل النسخ القديمة
+    // حالياً لا توجد تغييرات تاريخية
+  }
+  return data;
+};
+
+const validateImportedData = (raw) => {
+  const parsed = ImportedDataSchema.safeParse(raw);
+  if (!parsed.success) return null;
+  return migrate(parsed.data);
+};
 
 export default function App() {
   const [language, setLanguage] = useState('de');
@@ -35,6 +157,7 @@ export default function App() {
   const [zoom, setZoom] = useState(0.85);
   const [darkMode, setDarkMode] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [saveState, setSaveState] = useState('saved'); // 'saved' | 'saving' | 'idle'
   const [toastMessage, setToastMessage] = useState('');
   const [showGuide, setShowGuide] = useState(false);
   const [showBlog, setShowBlog] = useState(false);
@@ -66,14 +189,19 @@ export default function App() {
         }
       }
     } catch (e) {
-      localStorage.clear();
+      resetLaminStorage();
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('cvData', JSON.stringify(cvData));
-    localStorage.setItem('customization', JSON.stringify(customization));
-    showToastMessage('Gespeichert');
+    setSaveState('saving');
+    const timer = setTimeout(() => {
+      localStorage.setItem('cvData', JSON.stringify(cvData));
+      localStorage.setItem('customization', JSON.stringify(customization));
+      setSaveState('saved');
+    }, 800);
+
+    return () => clearTimeout(timer);
   }, [cvData, customization]);
 
   useEffect(() => {
@@ -86,7 +214,7 @@ export default function App() {
     const encoded = params.get('cv');
     if (encoded) {
       try {
-        const decoded = decodeURIComponent(escape(atob(encoded)));
+        const decoded = LZString.decompressFromEncodedURIComponent(encoded);
         const data = JSON.parse(decoded);
         if (data.cvData) setCvData(data.cvData);
         if (data.customization) setCustomization(data.customization);
@@ -149,7 +277,7 @@ export default function App() {
   const resetZoom = () => setZoom(0.85);
 
   const handleExport = () => {
-    const dataStr = JSON.stringify({ cvData, customization, sectionOrder }, null, 2);
+    const dataStr = JSON.stringify({ schemaVersion: LAMIN_SCHEMA_VERSION, cvData, customization, sectionOrder }, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -188,8 +316,13 @@ export default function App() {
         const reader = new FileReader();
         reader.onload = (event) => {
           try {
-            const data = JSON.parse(event.target.result);
-            if (data.cvData) setCvData(data.cvData);
+            const raw = JSON.parse(event.target.result);
+            const data = validateImportedData(raw);
+            if (!data || !data.cvData) {
+              showToastMessage('Ungültige Datei');
+              return;
+            }
+            setCvData(data.cvData);
             if (data.customization) setCustomization(data.customization);
             if (data.sectionOrder) setSectionOrder(data.sectionOrder);
             showToastMessage('Daten importiert');
@@ -201,6 +334,19 @@ export default function App() {
       }
     };
     input.click();
+  };
+
+  const resetLaminStorage = () => {
+    const keysToRemove = [
+      'cvData',
+      'customization',
+      'sectionOrder',
+      'sectionVisibility',
+      'hasVisitedLamin',
+    ];
+    keysToRemove.forEach(key => {
+      localStorage.removeItem(key);
+    });
   };
 
   const handleReset = () => {
@@ -237,7 +383,7 @@ export default function App() {
 
   const handleShare = () => {
     const data = JSON.stringify({ cvData, customization, sectionOrder });
-    const encoded = btoa(unescape(encodeURIComponent(data)));
+    const encoded = LZString.compressToEncodedURIComponent(data);
     setShareUrl(`${window.location.origin}${window.location.pathname}?cv=${encoded}`);
     setShowShare(true);
   };
@@ -253,7 +399,7 @@ export default function App() {
   if (showLanding) {
     return (
       <div dir={dir} className="min-h-screen font-sans">
-        <LandingPage language={language} onStart={() => { localStorage.setItem('hasVisitedLamin', 'true'); setShowLanding(false); }} />
+        <Suspense fallback={<div>Lädt...</div>}><LandingPage language={language} onStart={() => { localStorage.setItem('hasVisitedLamin', 'true'); setShowLanding(false); }} /></Suspense>
       </div>
     );
   }
@@ -261,9 +407,9 @@ export default function App() {
   return (
     <div dir={dir} className={`min-h-screen ${darkMode ? 'bg-royal-navy text-white' : 'bg-gray-100 text-gray-900'} font-sans transition-colors`}>
       <Navbar language={language} setLanguage={setLanguage} onPrint={() => window.print()} t={t} darkMode={darkMode} onShowGuide={() => { setShowGuide(true); setShowBlog(false); setCurrentPost(null);  }} onNavigate={() => { setShowGuide(false); setShowBlog(false); setCurrentPost(null);  }} onShowBlog={() => { setShowBlog(true); setShowGuide(false); setCurrentPost(null);  }} /> {showBlog && !currentPost ? (
-        <BlogPage posts={blogPosts} onReadPost={(post) => setCurrentPost(post)} language={language} t={t} onBack={() => { setShowBlog(false); setCurrentPost(null); setShowLanding(false); }} />
+        <Suspense fallback={<div>Lädt...</div>}><BlogPage posts={blogPosts} onReadPost={(post) => setCurrentPost(post)} language={language} t={t} onBack={() => { setShowBlog(false); setCurrentPost(null); setShowLanding(false); }} /></Suspense>
       ) : showBlog && currentPost ? (
-        <BlogPostView post={currentPost} onBack={() => setCurrentPost(null)} onBackToEditor={() => { setShowBlog(false); setCurrentPost(null); setShowLanding(false); }} language={language} t={t} />
+        <Suspense fallback={<div>Lädt...</div>}><BlogPostView post={currentPost} onBack={() => setCurrentPost(null)} onBackToEditor={() => { setShowBlog(false); setCurrentPost(null); setShowLanding(false); }} language={language} t={t} /></Suspense>
       ) : showGuide ? (
         <Suspense fallback={<div>Lädt...</div>}>
           <GuidePage t={t} onBack={() => setShowGuide(false)} />
@@ -327,6 +473,9 @@ export default function App() {
             <div className="lg:col-span-2">
               <div className="flex items-center justify-between mb-4 no-print">
                 <h2 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-royal-navy'}`}>Vorschau</h2>
+                <span className="text-xs text-gray-500 ml-3">
+                  {saveState === 'saving' ? 'Speichert...' : saveState === 'saved' ? '✓ Gespeichert' : ''}
+                </span>
                 <div className="flex items-center gap-2">
                   <button onClick={zoomOut} className="p-2 bg-white rounded-lg border border-gray-300 hover:bg-gray-50" title="Verkleinern"><ZoomOut className="h-4 w-4" /></button>
                   <span className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-600'} w-12 text-center`}>{Math.round(zoom * 100)}%</span>
@@ -369,7 +518,7 @@ export default function App() {
           </button>
 
           {showToast && <div className="toast-message">{toastMessage}</div>}
-          {showShare && <ShareModal shareUrl={shareUrl} onClose={() => setShowShare(false)} />}
+          {showShare && <Suspense fallback={null}><ShareModal shareUrl={shareUrl} onClose={() => setShowShare(false)} /></Suspense>}
 
           <div className="print-only" style={{ display: 'none' }}>
             <CVPreview cvData={cvData} customization={customization} t={t} sectionVisibility={sectionVisibility} sectionOrder={sectionOrder} />
