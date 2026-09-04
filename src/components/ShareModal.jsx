@@ -14,16 +14,23 @@ export default function ShareModal({ shareUrl, onClose }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 relative">
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+        <button
+          onClick={onClose}
+          aria-label="Schließen"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+        >
           <X className="h-6 w-6" />
         </button>
         <h3 className="text-xl font-bold text-royal-navy mb-4">Lebenslauf teilen</h3>
-        <p className="text-sm text-gray-600 mb-4">Kopiere den Link und teile ihn mit anderen. Der Link enthält alle Daten verschlüsselt.</p>
+        <p className="text-sm text-gray-600 mb-4">
+          Der Link enthält komprimierte Daten. Jeder, der den Link hat, kann den Inhalt sehen.
+        </p>
         <div className="flex gap-2 mb-4">
           <input
             type="text"
             value={shareUrl}
             readOnly
+            aria-label="Freigabelink"
             className="flex-1 p-2 border border-gray-300 rounded-lg text-sm focus:outline-none"
           />
           <button
